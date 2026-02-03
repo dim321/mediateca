@@ -105,11 +105,18 @@
 <!--
   ACTION REQUIRED: Define measurable success criteria.
   These must be technology-agnostic and measurable.
+  
+  CONSTITUTION REQUIREMENT: Performance criteria MUST include:
+  - Page load times: <2s for 95th percentile
+  - API response times: <200ms for 95th percentile
+  - Test coverage: >80% for new code
 -->
 
 ### Measurable Outcomes
 
-- **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]
-- **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
-- **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
-- **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+- **SC-001**: [User journey metric, e.g., "Users can complete account creation in under 2 minutes"]
+- **SC-002**: [Performance metric, e.g., "Page load time <2s for 95th percentile users"]
+- **SC-003**: [API performance metric, e.g., "API endpoints respond within 200ms for 95th percentile"]
+- **SC-004**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
+- **SC-005**: [Test coverage metric, e.g., "Test coverage >80% for all new code"]
+- **SC-006**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
