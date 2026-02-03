@@ -1,0 +1,8 @@
+# .shairc - Shai configuration
+slug: rails8
+include:
+  - .claude/**
+  - .cursor/**
+exclude:
+  - "**/*.local.*"
+  - "**/.env"

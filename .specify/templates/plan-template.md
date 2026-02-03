@@ -31,7 +31,13 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+**Code Quality**: ✅ Feature design adheres to Ruby Style Guide and single responsibility principle  
+**Testing**: ✅ TDD approach planned; test coverage target: >80%; integration tests identified  
+**UX Consistency**: ✅ Design patterns consistent with existing UI; responsive design planned; accessibility considered  
+**Performance**: ✅ Database query strategy defined; caching approach identified; performance targets set  
+**Quality Gates**: ✅ All required checks (tests, linting, security, performance) identified
+
+*If any check fails, document justification in Complexity Tracking section below.*
 
 ## Project Structure
 
