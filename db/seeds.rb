@@ -21,8 +21,8 @@ users = 3.times.map do |i|
     u.first_name = %w[Иван Мария Дмитрий][i]
     u.last_name = %w[Петров Сидорова Козлов][i]
     u.role = :user
-    u.balance = [5000, 10000, 3000][i]
-    u.company_name = ["ООО Реклама Плюс", "ИП Сидорова", nil][i]
+    u.balance = [ 5000, 10000, 3000 ][i]
+    u.company_name = [ "ООО Реклама Плюс", "ИП Сидорова", nil ][i]
   end
 end
 puts "  #{users.size} users created"
@@ -44,7 +44,7 @@ end
 puts "  #{devices.size} devices created"
 
 # Device groups
-groups = ["Торговые центры", "Бизнес-центры"].map do |name|
+groups = [ "Торговые центры", "Бизнес-центры" ].map do |name|
   DeviceGroup.find_or_create_by!(name: name)
 end
 groups.first.broadcast_devices << devices[0..1] rescue nil
@@ -64,7 +64,7 @@ devices.each do |device|
       broadcast_device: device,
       start_time: start_time.utc,
       end_time: (start_time + 30.minutes).utc,
-      starting_price: [100, 200, 500, 300].sample,
+      starting_price: [ 100, 200, 500, 300 ].sample,
       slot_status: :available
     )
   end
