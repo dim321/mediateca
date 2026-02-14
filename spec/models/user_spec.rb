@@ -1,0 +1,105 @@
+require "rails_helper"
+
+RSpec.describe User, type: :model do
+  subject(:user) { build(:user) }
+
+  describe "validations" do
+    it { is_expected.to validate_presence_of(:first_name) }
+    it { is_expected.to validate_presence_of(:last_name) }
+    it { is_expected.to validate_presence_of(:email) }
+    it { is_expected.to validate_uniqueness_of(:email).case_insensitive }
+    it { is_expected.to validate_numericality_of(:balance).is_greater_than_or_equal_to(0) }
+  end
+
+  describe "enums" do
+    it { is_expected.to define_enum_for(:role).with_values(user: 0, admin: 1) }
+  end
+
+  describe "associations" do
+    # Associations are tested once their target models exist (US1-US6)
+    it { is_expected.to have_many(:media_files).dependent(:destroy) } if defined?(MediaFile)
+    it { is_expected.to have_many(:playlists).dependent(:destroy) } if defined?(Playlist)
+    it { is_expected.to have_many(:bids).dependent(:restrict_with_error) } if defined?(Bid)
+    it { is_expected.to have_many(:transactions).dependent(:restrict_with_error) } if defined?(Transaction)
+    it { is_expected.to have_many(:scheduled_broadcasts).dependent(:restrict_with_error) } if defined?(ScheduledBroadcast)
+
+    it "declares associations for future models" do
+      associations = User.reflect_on_all_associations(:has_many).map(&:name)
+      expect(associations).to include(:media_files, :playlists, :bids, :transactions, :scheduled_broadcasts)
+    end
+  end
+
+  describe "Devise" do
+    it "is database authenticatable" do
+      expect(user).to respond_to(:email, :encrypted_password)
+    end
+
+    it "is registerable" do
+      expect(User.devise_modules).to include(:registerable)
+    end
+
+    it "is recoverable" do
+      expect(user).to respond_to(:reset_password_token)
+    end
+
+    it "is rememberable" do
+      expect(user).to respond_to(:remember_created_at)
+    end
+  end
+
+  describe "roles" do
+    it "defaults to user role" do
+      new_user = User.new
+      expect(new_user.role).to eq("user")
+    end
+
+    it "can be set to admin" do
+      user.role = :admin
+      expect(user).to be_admin
+    end
+
+    it "identifies admin users" do
+      admin = build(:user, :admin)
+      expect(admin).to be_admin
+    end
+  end
+
+  describe "balance" do
+    it "defaults to 0" do
+      new_user = User.new
+      expect(new_user.balance).to eq(0)
+    end
+
+    it "does not allow negative balance" do
+      user.balance = -1
+      expect(user).not_to be_valid
+      expect(user.errors[:balance]).to be_present
+    end
+
+    it "has a DB-level CHECK constraint for positive balance" do
+      persisted_user = create(:user)
+      expect {
+        persisted_user.update_column(:balance, -1)
+      }.to raise_error(ActiveRecord::StatementInvalid)
+    end
+  end
+
+  describe "#full_name" do
+    it "returns first and last name" do
+      user = build(:user, first_name: "Ivan", last_name: "Petrov")
+      expect(user.full_name).to eq("Ivan Petrov")
+    end
+  end
+
+  describe "#sufficient_balance?" do
+    it "returns true when balance covers amount" do
+      user = build(:user, :with_balance)
+      expect(user.sufficient_balance?(5_000)).to be true
+    end
+
+    it "returns false when balance is insufficient" do
+      user = build(:user, balance: 100)
+      expect(user.sufficient_balance?(500)).to be false
+    end
+  end
+end
