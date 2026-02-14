@@ -1,14 +1,59 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  devise_for :users
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # === User-facing routes ===
+  resources :media_files, only: [ :index, :show, :create, :destroy ]
+
+  resources :playlists do
+    resources :items, controller: "playlist_items", only: [ :create, :update, :destroy ]
+    patch :reorder, on: :member
+  end
+
+  resources :devices, only: [ :index ] do
+    get :schedule, on: :member
+  end
+
+  resources :auctions, only: [ :index, :show ] do
+    resources :bids, only: [ :create ]
+  end
+
+  resources :broadcasts, only: [ :index, :create ]
+
+  resource :balance, only: [ :show ] do
+    post :deposit
+  end
+
+  # === Admin namespace ===
+  namespace :admin do
+    resources :devices do
+      resources :time_slots, only: [ :index ] do
+        post :generate, on: :collection
+      end
+    end
+
+    resources :time_slots, only: [ :update ] do
+      post :create_auction, on: :member
+    end
+
+    resources :device_groups do
+      post :add_devices, on: :member
+      delete "remove_device/:device_id", action: :remove_device, on: :member, as: :remove_device
+    end
+  end
+
+  # === Device API ===
+  namespace :api do
+    namespace :v1 do
+      namespace :device do
+        get :schedule, to: "schedules#show"
+        post :heartbeat, to: "heartbeats#create"
+        post :broadcast_status, to: "broadcast_statuses#create"
+      end
+    end
+  end
+
+  # Health check
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
+  root "media_files#index"
 end
