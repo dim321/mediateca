@@ -12,8 +12,8 @@ services:
     # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 
-    # Uncomment the next line to use a non-root user for all processes.
-    # user: vscode
+    # Run as vscode so Ruby/bundler (installed via mise) are in PATH for postCreateCommand and dev workflow.
+    user: vscode
 
     # Use "forwardPorts" in **devcontainer.json** to forward an app port locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
@@ -33,6 +33,8 @@ services:
     volumes:
     - ~/docker-volumes/mediateca/docker_data/postgres_data:/var/lib/postgresql
 #    - postgres-data:/var/lib/postgresql
+    ports:
+    - "5432:5432"
     environment:
         POSTGRES_USER: postgres
         POSTGRES_PASSWORD: postgres
