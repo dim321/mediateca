@@ -1,0 +1,43 @@
+<div class="mb-6">
+  <%= link_to "← #{@device.name}", admin_device_path(@device), class: "text-sm text-indigo-600 hover:text-indigo-500" %>
+</div>
+
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Расписание: <%= @device.name %></h1>
+  <div class="flex items-center space-x-3">
+    <%= form_with url: admin_device_time_slots_path(@device), method: :get, class: "flex items-center space-x-2", data: { turbo_frame: "_top" } do |f| %>
+      <%= f.date_field :date, value: @date, class: "rounded-md border-gray-300 shadow-sm text-sm px-3 py-2 border" %>
+      <%= f.submit "Показать", class: "px-3 py-2 bg-gray-100 text-sm font-medium rounded-md hover:bg-gray-200 cursor-pointer" %>
+    <% end %>
+    <%= button_to "Генерировать слоты",
+          generate_admin_device_time_slots_path(@device),
+          params: { date: @date },
+          method: :post,
+          class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700" %>
+  </div>
+</div>
+
+<% if @time_slots.any? %>
+  <div class="bg-white shadow overflow-hidden rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Время</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Статус</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Начальная цена</th>
+          <th class="px-6 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <% @time_slots.each do |slot| %>
+          <%= render "time_slot", slot: slot %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="bg-white shadow rounded-lg p-8 text-center">
+    <p class="text-gray-500">Нет слотов на <%= @date %>.</p>
+    <p class="text-sm text-gray-400 mt-1">Нажмите «Генерировать слоты» для создания расписания.</p>
+  </div>
+<% end %>

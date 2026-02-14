@@ -38,4 +38,4 @@ You are an expert developer working on this project. Follow these guidelines:
 <!-- Example: -->
 <!-- - Use React Query for all API calls -->
 <!-- - Follow the existing folder structure -->
-<!-- - Use Tailwind for styling, avoid inline styles -->
+- Use Tailwind for styling, avoid inline styles

@@ -33,7 +33,32 @@
 /app/assets/builds/*
 !/app/assets/builds/.keep
 /config/master.key
+.kamal/secrets
 
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Ruby / Rails
+*.gem
+vendor/bundle/
+.ruby-lsp/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+/coverage/
+
+# Node (if any)
+node_modules/
+
+.aider*
+.cursor/*

@@ -1,61 +1,44 @@
 # Name of your application. Used to uniquely configure containers.
 service: mediateca
 
-# Name of the container image (use your-user/app-name on external registries).
-image: mediateca
+# Yandex Container Registry: replace REGISTRY_ID with your registry ID from Yandex Cloud console
+# (e.g. crp9xxxxxxxxxxxxxxxx).
+image: REGISTRY_ID/mediateca
 
-# Deploy to these servers.
+# Deploy to VM in Yandex Cloud. Replace with your VM's public IP or FQDN.
 servers:
   web:
-    - 192.168.0.1
+    - YOUR_VM_IP_OR_HOSTNAME
   # job:
   #   hosts:
-  #     - 192.168.0.1
+  #     - YOUR_VM_IP_OR_HOSTNAME
   #   cmd: bin/jobs
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
-#
-# Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
-#
-# Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
+# Enable SSL via Let's Encrypt (uncomment and set host when DNS points to YOUR_VM_IP_OR_HOSTNAME).
+# Requires config.assume_ssl and config.force_ssl in production.rb.
 #
 # proxy:
 #   ssl: true
 #   host: app.example.com
 
-# Where you keep your container images.
+# Yandex Container Registry (cr.yandex). Pusher account: use registry ID as username, password in .kamal/secrets.
+# Or OAuth: username "oauth", password = OAuth token. See https://cloud.yandex.ru/docs/container-registry/operations/authentication
 registry:
-  # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
-  server: localhost:5555
-
-  # Needed for authenticated registries.
-  # username: your-user
-
-  # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
+  server: cr.yandex
+  username: oauth
+  password:
+    - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
   secret:
     - RAILS_MASTER_KEY
+    - MEDIATECA_DATABASE_PASSWORD
   clear:
-    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
-    # When you start using multiple servers, you should split out job processing to a dedicated machine.
     SOLID_QUEUE_IN_PUMA: true
-
-    # Set number of processes dedicated to Solid Queue (default: 1)
-    # JOB_CONCURRENCY: 3
-
-    # Set number of cores available to the application on each server (default: 1).
-    # WEB_CONCURRENCY: 2
-
-    # Match this to any external database server to configure Active Record correctly
-    # Use mediateca-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
-
-    # Log everything from Rails
+    # DB_HOST: hostname of the db accessory on the same server (mediateca-db)
+    DB_HOST: mediateca-db
+    DB_PORT: "5432"
     # RAILS_LOG_LEVEL: debug
 
 # Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
@@ -94,26 +77,21 @@ builder:
 # ssh:
 #   user: app
 
-# Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: valkey/valkey:8
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+# PostgreSQL 18 on the same VM as the app (accessory). Uses private Docker network so app connects via mediateca-db.
+accessories:
+  db:
+    image: postgres:18
+    host: YOUR_VM_IP_OR_HOSTNAME
+    port: "127.0.0.1:5432:5432"
+    options:
+      network: "private"
+    env:
+      clear:
+        POSTGRES_USER: mediateca
+        POSTGRES_DB: mediateca_production
+      secret:
+        - POSTGRES_PASSWORD
+    files:
+      - db/production_setup.sql:/docker-entrypoint-initdb.d/setup.sql
+    directories:
+      - data:/var/lib/postgresql/data
