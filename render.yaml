@@ -1,3 +1,5 @@
+# Один инстанс PostgreSQL = одна база. Render не поддерживает несколько баз в одном ресурсе.
+# Для primary + queue/cache/cable используем одну БД (все таблицы в ней).
 databases:
   - name: mediateca
     databaseName: mediateca

@@ -3,12 +3,12 @@ service: mediateca
 
 # Yandex Container Registry: replace REGISTRY_ID with your registry ID from Yandex Cloud console
 # (e.g. crp9xxxxxxxxxxxxxxxx).
-image: REGISTRY_ID/mediateca
+image: crp0f2b2dotqfrc9j5h2/mediateca
 
 # Deploy to VM in Yandex Cloud. Replace with your VM's public IP or FQDN.
 servers:
   web:
-    - YOUR_VM_IP_OR_HOSTNAME
+    - 158.160.219.145
   # job:
   #   hosts:
   #     - YOUR_VM_IP_OR_HOSTNAME
@@ -19,7 +19,7 @@ servers:
 #
 # proxy:
 #   ssl: true
-#   host: app.example.com
+#   host: mediateca.store
 
 # Yandex Container Registry (cr.yandex). Pusher account: use registry ID as username, password in .kamal/secrets.
 # Or OAuth: username "oauth", password = OAuth token. See https://cloud.yandex.ru/docs/container-registry/operations/authentication
@@ -74,17 +74,15 @@ builder:
   #   - RAILS_MASTER_KEY
 
 # Use a different ssh user than root
-# ssh:
-#   user: app
+ssh:
+  user: dim
 
 # PostgreSQL 18 on the same VM as the app (accessory). Uses private Docker network so app connects via mediateca-db.
 accessories:
   db:
     image: postgres:18
-    host: YOUR_VM_IP_OR_HOSTNAME
+    host: 158.160.219.145
     port: "127.0.0.1:5432:5432"
-    options:
-      network: "private"
     env:
       clear:
         POSTGRES_USER: mediateca
@@ -94,4 +92,4 @@ accessories:
     files:
       - db/production_setup.sql:/docker-entrypoint-initdb.d/setup.sql
     directories:
-      - data:/var/lib/postgresql/data
+      - data:/var/lib/postgresql/
