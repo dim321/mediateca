@@ -17,9 +17,9 @@ servers:
 # Enable SSL via Let's Encrypt (uncomment and set host when DNS points to YOUR_VM_IP_OR_HOSTNAME).
 # Requires config.assume_ssl and config.force_ssl in production.rb.
 #
-# proxy:
-#   ssl: true
-#   host: mediateca.store
+proxy:
+  ssl: true
+  host: mediateca.store
 
 # Yandex Container Registry (cr.yandex). Pusher account: use registry ID as username, password in .kamal/secrets.
 # Or OAuth: username "oauth", password = OAuth token. See https://cloud.yandex.ru/docs/container-registry/operations/authentication
