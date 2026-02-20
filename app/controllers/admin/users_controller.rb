@@ -12,21 +12,22 @@ module Admin
         return
       end
 
-      if @user.update(user_params)
-        redirect_to admin_users_path, notice: "Роль пользователя «#{@user.full_name}» изменена на «#{@user.role}»."
-      else
-        redirect_to admin_users_path, alert: @user.errors.full_messages.join(", ")
+      role = params.dig(:user, :role).to_s
+      unless User.roles.key?(role)
+        redirect_to admin_users_path, alert: "Недопустимая роль: «#{role}»."
+        return
       end
+
+      @user.update!(role: role)
+      redirect_to admin_users_path, notice: "Роль пользователя «#{@user.full_name}» изменена на «#{role}»."
+    rescue ActiveRecord::RecordInvalid => e
+      redirect_to admin_users_path, alert: e.message
     end
 
     private
 
     def set_user
       @user = User.find(params[:id])
-    end
-
-    def user_params
-      params.require(:user).permit(:role)
     end
   end
 end

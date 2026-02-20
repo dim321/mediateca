@@ -83,12 +83,14 @@ RSpec.describe "Admin::Users", type: :request do
     end
 
     context "when passing invalid role" do
-      it "raises argument error for unknown role" do
-        expect {
-          patch admin_user_path(regular_user),
-                params: { user: { role: "superuser" } },
-                headers: html_headers
-        }.to raise_error(ArgumentError)
+      it "redirects with alert and does not change role" do
+        patch admin_user_path(regular_user),
+              params: { user: { role: "superuser" } },
+              headers: html_headers
+        expect(response).to redirect_to(admin_users_path)
+        expect(regular_user.reload.role).to eq("user")
+        follow_redirect!
+        expect(response.body).to include("Недопустимая роль")
       end
     end
   end
