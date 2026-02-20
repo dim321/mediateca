@@ -25,6 +25,7 @@ Rails.application.routes.draw do
 
   # === Admin namespace ===
   namespace :admin do
+    resources :users, only: [ :index, :update ]
     resources :devices do
       resources :time_slots, only: [ :index ] do
         post :generate, on: :collection
