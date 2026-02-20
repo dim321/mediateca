@@ -3,7 +3,7 @@ class DevicesController < ApplicationController
   skip_after_action :verify_policy_scoped, raise: false
 
   def index
-    @devices = BroadcastDevice.by_city(params[:city]).by_status(:online).order(:name)
+    @devices = BroadcastDevice.by_city(params[:city]).order(status: :desc).order(:name)
   end
 
   def schedule
