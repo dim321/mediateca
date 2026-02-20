@@ -1,0 +1,50 @@
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold text-gray-900">Пользователи</h1>
+  <span class="text-sm text-gray-500">Всего: <%= @users.count %></span>
+</div>
+
+<div class="bg-white shadow overflow-hidden rounded-lg">
+  <table class="min-w-full divide-y divide-gray-200">
+    <thead class="bg-gray-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Пользователь</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Роль</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Баланс</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Зарегистрирован</th>
+        <th class="px-6 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-gray-200">
+      <% @users.each do |user| %>
+        <tr>
+          <td class="px-6 py-4">
+            <div class="text-sm font-medium text-gray-900"><%= user.full_name %></div>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500"><%= user.email %></td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= user.admin? ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-700' %>">
+              <%= user.role %>
+            </span>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500"><%= number_to_currency(user.balance, unit: "₽", separator: ",", delimiter: " ", format: "%n %u") %></td>
+          <td class="px-6 py-4 text-sm text-gray-500"><%= user.created_at.strftime("%d.%m.%Y") %></td>
+          <td class="px-6 py-4 text-right">
+            <% if user != current_user %>
+              <%= form_with url: admin_user_path(user), method: :patch, class: "inline-flex items-center space-x-2" do |f| %>
+                <%= f.select :role,
+                    User.roles.keys.map { |r| [r, r] },
+                    { selected: user.role },
+                    class: "text-sm border-gray-300 rounded-md shadow-sm py-1 pl-2 pr-8 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" %>
+                <%= f.submit "Сохранить",
+                    class: "text-xs px-3 py-1.5 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 cursor-pointer" %>
+              <% end %>
+            <% else %>
+              <span class="text-xs text-gray-400 italic">вы</span>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
