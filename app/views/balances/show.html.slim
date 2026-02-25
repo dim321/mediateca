@@ -34,11 +34,11 @@ h2 class="text-lg font-semibold text-gray-900 mb-4" История транза�
             td class="px-6 py-4"
               span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{txn.deposit? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}"
                 = txn.deposit? ? "Пополнение" : "Списание"
-            td class="px-6 py-4 text-sm text-right font-medium #{txn.amount.positive? ? 'text-green-600' : 'text-red-600'}"
-              = txn.amount.positive? ? "+" : ""
+            td class="px-6 py-4 text-sm text-right font-medium #{txn.amount >= 0 ? 'text-green-600' : 'text-red-600'}"
+              = txn.amount >= 0 ? "+" : ""
               = number_to_currency(txn.amount, unit: "₽", format: "%n %u")
   div class="mt-4"
-    == pagy_nav(@pagy) if @pagy.pages > 1
+    == pagy_nav(@pagy) if @pagy&.pages.to_i > 1
 - else
   div class="bg-white shadow rounded-lg p-8 text-center"
     p class="text-gray-500" Нет транзакций.

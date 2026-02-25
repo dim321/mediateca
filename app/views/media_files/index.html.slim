@@ -40,7 +40,7 @@ div data-controller="upload"
           - @media_files.each do |file|
             = render partial: "media_files/media_file", locals: { media_file: file }
     div class="mt-4"
-      == @pagy.series_nav
+      == @pagy&.series_nav
   - else
     div class="text-center py-12"
       p class="text-gray-500 text-lg" Нет загруженных файлов
