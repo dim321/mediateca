@@ -1,4 +1,4 @@
-= form_with model: group, url: group.persisted? ? admin_device_group_path(group) : admin_device_groups_path, class: "space-y-4" do |f|
+= form_with model: [:admin, group], class: "space-y-4" do |f|
   - if group.errors.any?
     div class="rounded-md bg-red-50 p-4" role="alert" aria-live="assertive" aria-atomic="true"
       ul class="list-disc pl-5 text-sm text-red-700"
