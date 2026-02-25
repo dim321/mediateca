@@ -1,0 +1,5 @@
+ru:
+  devise:
+    passwords:
+      edit:
+        change_your_password: "Изменить пароль"
