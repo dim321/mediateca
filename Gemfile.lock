@@ -486,7 +486,7 @@ DEPENDENCIES
   selenium-webdriver
   shoulda-matchers
   simplecov
-  slim-rails
+  slim-rails (~> 4.0)
   solid_cable
   solid_cache
   solid_queue
