@@ -17,7 +17,7 @@ div class="flex space-x-2 mb-4"
           th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Статус
       tbody class="bg-white divide-y divide-gray-200"
         - @broadcasts.each do |broadcast|
-          = render "broadcast", broadcast: broadcast
+          = render partial: "broadcast", locals: { broadcast: broadcast }
   div class="mt-4"
     == pagy_nav(@pagy) if @pagy.pages > 1
 - else

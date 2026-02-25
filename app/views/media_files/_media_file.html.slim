@@ -8,13 +8,9 @@ tr
   td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" = media_file.formatted_duration
   td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" = media_file.formatted_file_size
   td class="px-6 py-4 whitespace-nowrap"
-    - case media_file.processing_status
-    - when "ready"
-      span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" Готов
-    - when "pending", "processing"
-      span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" Обработка...
-    - when "failed"
-      span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800" Ошибка
+    - status_class = { ready: "bg-green-100 text-green-800", pending: "bg-yellow-100 text-yellow-800", processing: "bg-yellow-100 text-yellow-800", failed: "bg-red-100 text-red-800" }.fetch(media_file.processing_status&.to_sym, "bg-gray-100 text-gray-800")
+    - status_text = { ready: "Готов", pending: "Обработка...", processing: "Обработка...", failed: "Ошибка" }.fetch(media_file.processing_status&.to_sym, "Неизвестно")
+    span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{status_class}" = status_text
   td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
     = button_to "Удалить", media_file_path(media_file), method: :delete,
         class: "text-red-600 hover:text-red-900",

@@ -6,7 +6,7 @@ div class="flex space-x-2 mb-4"
   - %w[open closed].each do |status|
     = link_to status.humanize, auctions_path(status: status), class: "px-3 py-1 text-sm rounded-md #{params[:status] == status ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
 
-- if @auctions.any?
+- if @auctions&.any?
   div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
     - @auctions.each do |auction|
       div class="bg-white shadow rounded-lg p-5"
@@ -26,11 +26,11 @@ div class="flex space-x-2 mb-4"
               = auction.current_highest_bid ? number_to_currency(auction.current_highest_bid, unit: "₽", format: "%n %u") : "—"
           div class="flex justify-between"
             dt class="text-gray-500" Закрытие:
-            dd = auction.closes_at.strftime('%d.%m %H:%M')
+            dd = auction.closes_at&.strftime('%d.%m %H:%M') || "—"
         div class="mt-4"
           = link_to "Подробнее", auction_path(auction), class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 w-full justify-center"
   div class="mt-4"
-    == pagy_nav(@pagy) if @pagy.pages > 1
+    == pagy_nav(@pagy) if @pagy&.pages.to_i > 1
 - else
   div class="bg-white shadow rounded-lg p-8 text-center"
     p class="text-gray-500" Нет активных аукционов.
