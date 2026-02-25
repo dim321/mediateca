@@ -19,7 +19,7 @@ div class="flex space-x-2 mb-4"
         - @broadcasts.each do |broadcast|
           = render partial: "broadcast", locals: { broadcast: broadcast }
   div class="mt-4"
-    == pagy_nav(@pagy) if @pagy.pages > 1
+    == pagy_nav(@pagy) if @pagy && @pagy.pages > 1
 - else
   div class="bg-white shadow rounded-lg p-8 text-center"
     p class="text-gray-500" У вас пока нет запланированных трансляций.
