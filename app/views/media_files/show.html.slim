@@ -9,11 +9,7 @@ div class="bg-white shadow overflow-hidden rounded-lg"
         - if @media_file.created_at.nil?
           | —
         - else
-          - created_at_str = begin
-              l(@media_file.created_at, format: :long)
-            rescue I18n::MissingTranslationData, ArgumentError
-              @media_file.created_at.strftime('%d.%m.%Y %H:%M')
-            end
+          - created_at_str = l(@media_file.created_at, format: :long) rescue @media_file.created_at.strftime('%d.%m.%Y %H:%M')
           = created_at_str
     div
       span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium #{@media_file.audio? ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}"
