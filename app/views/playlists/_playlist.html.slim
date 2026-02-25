@@ -1,0 +1,12 @@
+= link_to playlist_path(playlist), class: "block bg-white rounded-lg shadow hover:shadow-md transition-shadow p-6" do
+  div class="flex justify-between items-start"
+    h3 class="text-lg font-semibold text-gray-900" = playlist.name
+    span class="text-sm text-gray-500"
+      = playlist.items_count
+      |  треков
+  - if playlist.description.present?
+    p class="mt-2 text-sm text-gray-500 line-clamp-2" = playlist.description
+  div class="mt-4 flex items-center text-sm text-gray-500"
+    span
+      | Длительность:#{' '}
+      = playlist.formatted_duration

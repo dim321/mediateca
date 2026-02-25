@@ -1,0 +1,39 @@
+div class="mb-6"
+  = link_to "← Назад к медиатеке", media_files_path, class: "text-sm text-indigo-600 hover:text-indigo-500"
+
+div class="bg-white shadow overflow-hidden rounded-lg"
+  div class="px-4 py-5 sm:px-6 flex justify-between items-center"
+    div
+      h1 class="text-2xl font-bold text-gray-900" = @media_file.title
+      p class="mt-1 text-sm text-gray-500"
+        = l(@media_file.created_at, format: :long) rescue @media_file.created_at.strftime('%d.%m.%Y %H:%M')
+    div
+      span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium #{@media_file.audio? ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}"
+        = @media_file.audio? ? "Аудио" : "Видео"
+
+  div class="border-t border-gray-200 px-4 py-5 sm:px-6"
+    dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-3"
+      div
+        dt class="text-sm font-medium text-gray-500" Формат
+        dd class="mt-1 text-sm text-gray-900" = @media_file.format.upcase
+      div
+        dt class="text-sm font-medium text-gray-500" Длительность
+        dd class="mt-1 text-sm text-gray-900" = @media_file.formatted_duration
+      div
+        dt class="text-sm font-medium text-gray-500" Размер
+        dd class="mt-1 text-sm text-gray-900" = @media_file.formatted_file_size
+      div
+        dt class="text-sm font-medium text-gray-500" Статус обработки
+        dd class="mt-1"
+          - case @media_file.processing_status
+          - when "ready"
+            span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800" Готов
+          - when "pending", "processing"
+            span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" Обработка...
+          - when "failed"
+            span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800" Ошибка
+
+  div class="border-t border-gray-200 px-4 py-4 sm:px-6"
+    = button_to "Удалить файл", media_file_path(@media_file), method: :delete,
+        class: "inline-flex items-center px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50",
+        data: { turbo_confirm: "Вы уверены?" }
