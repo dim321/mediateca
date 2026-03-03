@@ -1,3 +1,5 @@
+<%= turbo_stream_from "media_file_#{@media_file.id}_status" %>
+
 <div class="mb-6">
   <%= link_to "← Назад к медиатеке", media_files_path, class: "text-sm text-indigo-600 hover:text-indigo-500" %>
 </div>
@@ -31,14 +33,9 @@
       </div>
       <div>
         <dt class="text-sm font-medium text-gray-500">Статус обработки</dt>
-        <dd class="mt-1">
-          <% case @media_file.processing_status %>
-          <% when "ready" %>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Готов</span>
-          <% when "pending", "processing" %>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Обработка...</span>
-          <% when "failed" %>
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Ошибка</span>
+        <dd class="mt-1" id="<%= "media_file_status_#{@media_file.id}" %>">
+          <%= turbo_frame_tag "media_file_#{@media_file.id}_status" do %>
+            <%= render "processing_status", media_file: @media_file %>
           <% end %>
         </dd>
       </div>
@@ -46,8 +43,6 @@
   </div>
 
   <div class="border-t border-gray-200 px-4 py-4 sm:px-6">
-    <%= button_to "Удалить файл", media_file_path(@media_file), method: :delete,
-        class: "inline-flex items-center px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50",
-        data: { turbo_confirm: "Вы уверены?" } %>
+    <%= button_to "Удалить файл", media_file_path(@media_file), method: :delete, class: "inline-flex items-center px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50", data: { turbo_confirm: "Вы уверены?" } %>
   </div>
 </div>
