@@ -10,7 +10,7 @@ module Admin
     end
 
     def generate
-      date = Date.parse(params[:date])
+      date = params[:date].present? ? Date.parse(params[:date]) : Date.current
       zone = ActiveSupport::TimeZone[@device.time_zone] || ActiveSupport::TimeZone["UTC"]
 
       # Check if slots already exist for this date

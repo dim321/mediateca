@@ -1,0 +1,29 @@
+= form_with model: device, url: device.persisted? ? admin_device_path(device) : admin_devices_path, class: "space-y-4" do |f|
+  - if device.errors.any?
+    div class="rounded-md bg-red-50 p-4"
+      ul class="list-disc pl-5 text-sm text-red-700"
+        - device.errors.full_messages.each do |msg|
+          li = msg
+
+  div
+    = f.label :name, "Название", class: "block text-sm font-medium text-gray-700"
+    = f.text_field :name, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+
+  div
+    = f.label :city, "Город", class: "block text-sm font-medium text-gray-700"
+    = f.text_field :city, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+
+  div
+    = f.label :address, "Адрес", class: "block text-sm font-medium text-gray-700"
+    = f.text_field :address, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+
+  div
+    = f.label :time_zone, "Часовой пояс", class: "block text-sm font-medium text-gray-700"
+    = f.time_zone_select :time_zone, ActiveSupport::TimeZone.all, { default: "Moscow" }, { class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border" }
+
+  div
+    = f.label :description, "Описание (необязательно)", class: "block text-sm font-medium text-gray-700"
+    = f.text_area :description, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+
+  div
+    = f.submit device.persisted? ? "Сохранить" : "Создать", class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 cursor-pointer"

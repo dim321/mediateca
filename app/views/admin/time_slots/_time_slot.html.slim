@@ -1,0 +1,14 @@
+tr
+  td class="px-6 py-4 text-sm text-gray-900"
+    = slot.display_time_in_zone
+  td class="px-6 py-4"
+    - status_class = { available: "bg-green-100 text-green-800", auction_active: "bg-yellow-100 text-yellow-800", sold: "bg-red-100 text-red-800" }.fetch(slot.slot_status&.to_sym, "bg-gray-100 text-gray-800")
+    span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{status_class}"
+      = slot.slot_status&.humanize
+  td class="px-6 py-4 text-sm text-gray-900"
+    = number_to_currency(slot.starting_price, unit: "₽", format: "%n %u")
+  td class="px-6 py-4 text-right"
+    - if slot.available?
+      = form_with model: [:admin, slot], method: :patch, class: "inline-flex items-center space-x-2" do |f|
+        = f.number_field :starting_price, value: slot.starting_price, min: 0, step: 0.01, class: "w-24 rounded-md border-gray-300 shadow-sm text-sm px-2 py-1 border"
+        = f.submit "Сохранить", class: "text-xs text-indigo-600 hover:text-indigo-900 cursor-pointer"

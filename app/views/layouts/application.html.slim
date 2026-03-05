@@ -1,0 +1,65 @@
+doctype html
+html lang="ru" class="h-full bg-gray-50"
+  head
+    title Mediateca
+    meta name="viewport" content="width=device-width,initial-scale=1"
+    meta name="apple-mobile-web-app-capable" content="yes"
+    meta name="mobile-web-app-capable" content="yes"
+    = csrf_meta_tags
+    = csp_meta_tag
+    = stylesheet_link_tag "tailwind", "data-turbo-track": "reload"
+    = stylesheet_link_tag "application", "data-turbo-track": "reload"
+    = javascript_importmap_tags
+  body class="h-full"
+    nav class="bg-white shadow-sm border-b border-gray-200" data-controller="mobile-menu"
+      div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
+        div class="flex h-16 justify-between"
+          div class="flex flex-1"
+            = link_to "Mediateca", root_path, class: "flex items-center text-xl font-bold text-indigo-600"
+            - if user_signed_in?
+              / Desktop nav (hidden on mobile)
+              div class="hidden sm:ml-6 sm:flex sm:space-x-4"
+                = link_to "Медиатека", media_files_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600"
+                = link_to "Плейлисты", playlists_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600"
+                = link_to "Устройства", devices_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600"
+                = link_to "Аукционы", auctions_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600"
+                = link_to "Трансляции", broadcasts_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 hover:text-indigo-600"
+                - if current_user.admin?
+                  = link_to "Админ", admin_devices_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-red-600 hover:text-red-800"
+          / Mobile hamburger (visible only on mobile)
+          - if user_signed_in?
+            div class="flex items-center sm:hidden"
+              button type="button" class="inline-flex items-center justify-center rounded-md p-2 text-gray-700 hover:bg-gray-100 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500" data-action="click->mobile-menu#toggle" aria-expanded="false" aria-controls="mobile-nav-menu"
+                span class="sr-only" Открыть меню
+                svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"
+                  path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+          div class="flex items-center space-x-4"
+            - if user_signed_in?
+              = link_to balance_path, class: "inline-flex items-center px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium hover:bg-green-100" do
+                = number_to_currency(current_user.balance, unit: "₽", format: "%n %u")
+              span class="text-sm text-gray-500" = current_user.full_name
+              = button_to "Выход", destroy_user_session_path, method: :delete, class: "text-sm text-gray-500 hover:text-gray-700"
+            - else
+              = link_to "Вход", new_user_session_path, class: "text-sm text-gray-700 hover:text-indigo-600"
+              = link_to "Регистрация", new_user_registration_path, class: "ml-2 inline-flex items-center px-3 py-1.5 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700"
+        / Mobile nav menu (block on mobile when open, hidden on sm+)
+        - if user_signed_in?
+          div id="mobile-nav-menu" class="hidden sm:hidden border-t border-gray-200 py-4" data-mobile-menu-target="menu"
+            div class="flex flex-col space-y-1 px-2"
+              = link_to "Медиатека", media_files_path, class: "block px-3 py-2 text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md"
+              = link_to "Плейлисты", playlists_path, class: "block px-3 py-2 text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md"
+              = link_to "Устройства", devices_path, class: "block px-3 py-2 text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md"
+              = link_to "Аукционы", auctions_path, class: "block px-3 py-2 text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md"
+              = link_to "Трансляции", broadcasts_path, class: "block px-3 py-2 text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50 rounded-md"
+              - if current_user.admin?
+                = link_to "Админ", admin_devices_path, class: "block px-3 py-2 text-base font-medium text-red-600 hover:text-red-800 hover:bg-gray-50 rounded-md"
+    - if notice.present?
+      div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4"
+        div class="rounded-md bg-green-50 p-4"
+          p class="text-sm text-green-700" = notice
+    - if alert.present?
+      div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4"
+        div class="rounded-md bg-red-50 p-4"
+          p class="text-sm text-red-700" = alert
+    main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8"
+      = yield

@@ -43,7 +43,7 @@ class MediaFile < ApplicationRecord
   def broadcast_status_update
     broadcast_replace_to(
       "media_file_#{id}_status",
-      target: "media_file_status_#{id}",
+      target: "media_file_#{id}_status",
       partial: "media_files/processing_status",
       locals: { media_file: self }
     )

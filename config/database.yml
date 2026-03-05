@@ -86,7 +86,6 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
-# Production: Render free tier provides ONE database. Cache/queue/cable use the same DB.
 # Kamal deploy uses separate DBs (set DATABASE_URL empty, use DB_HOST + MEDIATECA_DATABASE_PASSWORD).
 production:
   primary: &primary_production
