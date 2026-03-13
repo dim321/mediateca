@@ -1,3 +1,0 @@
-
- app/views/media_files/_processing_status.html.slim ````
-= processing_status_badge(media_file)
