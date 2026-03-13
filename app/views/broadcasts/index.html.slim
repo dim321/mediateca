@@ -3,8 +3,8 @@ div class="flex justify-between items-center mb-6"
 
 div class="flex space-x-2 mb-4"
   = link_to "Все", broadcasts_path, class: "px-3 py-1 text-sm rounded-md #{params[:status].blank? ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
-  - %w[scheduled playing completed failed].each do |status|
-    = link_to status.humanize, broadcasts_path(status: status), class: "px-3 py-1 text-sm rounded-md #{params[:status] == status ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
+  - { "scheduled" => "Запланированные", "playing" => "Идёт трансляция", "completed" => "Завершённые", "failed" => "Ошибка" }.each do |status, label|
+    = link_to label, broadcasts_path(status: status), class: "px-3 py-1 text-sm rounded-md #{params[:status] == status ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
 
 - if @broadcasts.any?
   div class="bg-white shadow overflow-hidden rounded-lg"
