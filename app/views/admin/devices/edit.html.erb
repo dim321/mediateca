@@ -1,8 +1,0 @@
-<div class="mb-6">
-  <%= link_to "← #{@device.name}", admin_device_path(@device), class: "text-sm text-indigo-600 hover:text-indigo-500" %>
-</div>
-
-<div class="bg-white shadow rounded-lg p-6 max-w-lg">
-  <h1 class="text-2xl font-bold text-gray-900 mb-6">Редактировать устройство</h1>
-  <%= render "form", device: @device %>
-</div>

@@ -1,0 +1,28 @@
+div class="mb-6"
+  h1 class="text-2xl font-bold text-gray-900" = t("devices.index.title")
+  p class="text-sm text-gray-500 mt-1" = t("devices.index.hint")
+
+= form_with url: devices_path, method: :get, class: "mb-6 flex items-center space-x-3" do |f|
+  = f.label :city, t("devices.index.city"), class: "sr-only"
+  = f.text_field :city, value: params[:city], placeholder: t("devices.index.city_placeholder"), class: "rounded-md border-gray-300 shadow-sm text-sm px-3 py-2 border"
+  = f.submit t("common.filter"), class: "px-4 py-2 bg-gray-100 text-sm font-medium rounded-md hover:bg-gray-200 cursor-pointer"
+  - if params[:city].present?
+    = link_to t("common.reset"), devices_path, class: "text-sm text-gray-500 hover:text-gray-700"
+
+- if @devices.any?
+  div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+    - @devices.each do |device|
+      div class="bg-white shadow rounded-lg p-5"
+        div class="flex justify-between items-start"
+          div
+            h3 class="text-lg font-semibold text-gray-900" = device.name
+            p class="text-sm text-gray-500"
+              = device.city
+              | ,#{' '}
+              = device.address
+          = status_badge(device.status)
+        div class="mt-4"
+          = link_to t("devices.index.schedule"), schedule_device_path(device), class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700"
+- else
+  div class="bg-white shadow rounded-lg p-8 text-center"
+    p class="text-gray-500" = t("devices.index.empty")

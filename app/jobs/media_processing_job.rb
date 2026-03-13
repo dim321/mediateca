@@ -23,5 +23,8 @@ class MediaProcessingJob < ApplicationJob
       Rails.logger.error("MediaProcessingJob failed for #{media_file_id}: #{e.message}")
       media_file.failed!
     end
+
+    # Транслируем обновление статуса всем подключённым клиентам
+    media_file.broadcast_status_update
   end
 end

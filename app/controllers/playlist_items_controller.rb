@@ -3,10 +3,16 @@ class PlaylistItemsController < ApplicationController
   before_action :set_playlist_item, only: [ :update, :destroy ]
 
   def create
-    @item = @playlist.playlist_items.build(playlist_item_params)
     authorize @playlist, :update?
 
-    if @item.save
+    saved = false
+    @playlist.with_lock do
+      next_position = (@playlist.playlist_items.maximum(:position) || 0) + 1
+      @item = @playlist.playlist_items.build(create_playlist_item_params.merge(position: next_position))
+      saved = @item.save
+    end
+
+    if saved
       redirect_to @playlist, notice: "Файл добавлен в плейлист."
     else
       redirect_to @playlist, alert: @item.errors.full_messages.join(", ")
@@ -37,6 +43,10 @@ class PlaylistItemsController < ApplicationController
 
   def set_playlist_item
     @item = @playlist.playlist_items.find(params[:id])
+  end
+
+  def create_playlist_item_params
+    params.require(:playlist_item).permit(:media_file_id)
   end
 
   def playlist_item_params
