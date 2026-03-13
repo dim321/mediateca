@@ -34,7 +34,9 @@ class ApplicationController < ActionController::Base
   end
 
   def set_locale
-    I18n.locale = params[:locale].presence_in(I18n.available_locales) || session[:locale] || I18n.default_locale
+    locale = params[:locale].to_s.presence_in(I18n.available_locales.map(&:to_s))
+    locale &&= locale.to_sym
+    I18n.locale = locale || session[:locale] || I18n.default_locale
     session[:locale] = I18n.locale if params[:locale].present?
   end
 

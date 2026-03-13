@@ -130,9 +130,12 @@ ru:
       plan_broadcast: "Запланировать"
       plan_confirm: "Запланировать трансляцию?"
       no_slots: "Нет слотов на %{date}."
+      select_playlist: "Выберите плейлист"
+      no_playlists: "Сначала создайте плейлист"
+      actions: "Действия"
     status:
-      online: "Online"
-      offline: "Offline"
+      online: "В сети"
+      offline: "Не в сети"
 
   time_slot:
     status:
@@ -240,6 +243,8 @@ ru:
       edit:
         title: "Редактировать устройство"
         back: "← Устройство"
+        back_with_name: "← %{name}"
+        back_with_name: "← %{name}"
       form:
         name: "Название"
         city: "Город"

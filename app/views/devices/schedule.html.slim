@@ -21,7 +21,8 @@ div class="flex justify-between items-center mb-6"
           th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("devices.schedule.time")
           th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("devices.schedule.status")
           th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("devices.schedule.price")
-          th class="px-6 py-3"
+          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"
+            span class="sr-only" = t("devices.schedule.actions")
       tbody class="bg-white divide-y divide-gray-200"
         - @time_slots.each do |slot|
           tr
@@ -34,11 +35,13 @@ div class="flex justify-between items-center mb-6"
               = number_to_currency(slot.starting_price, unit: "₽", format: "%n %u")
             td class="px-6 py-4 text-right"
               - if slot.available?
-                = button_to t("devices.schedule.plan_broadcast"), broadcasts_path,
-                    params: { broadcast: { time_slot_id: slot.id } },
-                    method: :post,
-                    form: { data: { turbo_confirm: t("devices.schedule.plan_confirm") } },
-                    class: "text-sm text-indigo-600 hover:text-indigo-900"
+                - if current_user.playlists.any?
+                  = form_with url: broadcasts_path, method: :post, class: "inline-flex items-center gap-2" do |f|
+                    = f.hidden_field "broadcast[time_slot_id]", value: slot.id
+                    = f.select "broadcast[playlist_id]", options_from_collection_for_select(current_user.playlists, :id, :name), { prompt: t("devices.schedule.select_playlist") }, class: "text-sm rounded border-gray-300 py-1 pr-6"
+                    = f.submit t("devices.schedule.plan_broadcast"), class: "text-sm text-indigo-600 hover:text-indigo-900 cursor-pointer", data: { turbo_confirm: t("devices.schedule.plan_confirm") }
+                - else
+                  span class="text-sm text-gray-400" = t("devices.schedule.no_playlists")
 - else
   div class="bg-white shadow rounded-lg p-8 text-center"
-    p class="text-gray-500" = t("devices.schedule.no_slots", date: @date)
+    p class="text-gray-500" = t("devices.schedule.no_slots", date: l(@date, format: :long))

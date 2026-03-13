@@ -130,6 +130,9 @@ en:
       plan_broadcast: "Plan broadcast"
       plan_confirm: "Plan broadcast?"
       no_slots: "No slots on %{date}."
+      select_playlist: "Select playlist"
+      no_playlists: "Create a playlist first"
+      actions: "Actions"
     status:
       online: "Online"
       offline: "Offline"
@@ -240,6 +243,8 @@ en:
       edit:
         title: "Edit device"
         back: "Device"
+        back_with_name: "← %{name}"
+        back_with_name: "← %{name}"
       form:
         name: "Name"
         city: "City"

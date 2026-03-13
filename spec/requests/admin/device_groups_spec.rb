@@ -24,8 +24,10 @@ RSpec.describe "Admin::DeviceGroups", type: :request do
 
   describe "POST /admin/device_groups" do
     it "creates a group with valid data" do
+      unique_name = "Торговые центры #{SecureRandom.hex(4)}"
+
       expect {
-        post admin_device_groups_path, params: { device_group: { name: "Торговые центры", description: "Группа ТЦ" } }, headers: html_headers
+        post admin_device_groups_path, params: { device_group: { name: unique_name, description: "Группа ТЦ" } }, headers: html_headers
       }.to change(DeviceGroup, :count).by(1)
     end
 
