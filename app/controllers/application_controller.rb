@@ -2,6 +2,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include Pagy::Method
 
+  before_action :set_locale
   before_action :authenticate_user!
 
   after_action :verify_authorized, unless: :skip_authorization?
@@ -23,18 +24,27 @@ class ApplicationController < ActionController::Base
   end
 
   def user_not_authorized
-    flash[:alert] = "У вас нет доступа к этому действию."
+    flash[:alert] = t("common.user_not_authorized")
     redirect_back(fallback_location: root_path)
   end
 
   def record_not_found
-    flash[:alert] = "Запись не найдена."
+    flash[:alert] = t("common.record_not_found")
     redirect_back(fallback_location: root_path)
+  end
+
+  def set_locale
+    I18n.locale = params[:locale].presence_in(I18n.available_locales) || session[:locale] || I18n.default_locale
+    session[:locale] = I18n.locale if params[:locale].present?
+  end
+
+  def default_url_options
+    I18n.locale == I18n.default_locale ? {} : { locale: I18n.locale }
   end
 
   def require_admin
     unless current_user&.admin?
-      flash[:alert] = "Доступ только для администраторов."
+      flash[:alert] = t("common.require_admin")
       redirect_to root_path
     end
   end

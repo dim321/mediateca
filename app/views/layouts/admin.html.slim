@@ -1,7 +1,7 @@
 doctype html
-html lang="ru" class="h-full bg-gray-100"
+html lang=I18n.locale class="h-full bg-gray-100"
   head
-    title Mediateca — Админ
+    title = "#{t('app_name')} — #{t('admin.nav.title')}"
     meta name="viewport" content="width=device-width,initial-scale=1"
     = csrf_meta_tags
     = csp_meta_tag
@@ -13,15 +13,19 @@ html lang="ru" class="h-full bg-gray-100"
       div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
         div class="flex h-16 justify-between"
           div class="flex"
-            = link_to "Mediateca Admin", admin_devices_path, class: "flex items-center text-xl font-bold text-white"
+            = link_to t("admin.nav.title"), admin_devices_path, class: "flex items-center text-xl font-bold text-white"
             div class="hidden sm:ml-6 sm:flex sm:space-x-4"
-              = link_to "Устройства", admin_devices_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
-              = link_to "Группы", admin_device_groups_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
-              = link_to "Пользователи", admin_users_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
+              = link_to t("admin.nav.devices"), admin_devices_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
+              = link_to t("admin.nav.groups"), admin_device_groups_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
+              = link_to t("admin.nav.users"), admin_users_path, class: "inline-flex items-center px-3 py-2 text-sm font-medium text-gray-300 hover:text-white"
           div class="flex items-center space-x-4"
-            = link_to "На сайт", root_path, class: "text-sm text-gray-300 hover:text-white"
+            span class="text-xs text-gray-500"
+              = link_to "RU", url_for(locale: :ru), class: (I18n.locale == :ru ? "font-semibold text-white" : "hover:text-white")
+              | &nbsp;|&nbsp;
+              = link_to "EN", url_for(locale: :en), class: (I18n.locale == :en ? "font-semibold text-white" : "hover:text-white")
+            = link_to t("admin.nav.to_site"), root_path, class: "text-sm text-gray-300 hover:text-white"
             span class="text-sm text-gray-400" = current_user.full_name
-            = button_to "Выход", destroy_user_session_path, method: :delete, class: "text-sm text-gray-300 hover:text-white"
+            = button_to t("nav.sign_out"), destroy_user_session_path, method: :delete, class: "text-sm text-gray-300 hover:text-white"
     - if notice.present?
       div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4"
         div class="rounded-md bg-green-50 p-4"

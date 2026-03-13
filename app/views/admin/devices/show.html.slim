@@ -1,5 +1,5 @@
 div class="mb-6"
-  = link_to "← Устройства", admin_devices_path, class: "text-sm text-indigo-600 hover:text-indigo-500"
+  = link_to t("admin.devices.show.back"), admin_devices_path, class: "text-sm text-indigo-600 hover:text-indigo-500"
 
 div class="bg-white shadow rounded-lg p-6 mb-6"
   div class="flex justify-between items-start"
@@ -11,23 +11,23 @@ div class="bg-white shadow rounded-lg p-6 mb-6"
         = @device.address
     div class="flex space-x-2"
       span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium #{@device.online? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}"
-        = @device.online? ? "Online" : "Offline"
-      = link_to "Изменить", edit_admin_device_path(@device), class: "inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-      = button_to "Удалить", admin_device_path(@device), method: :delete,
+        = t("devices.status.#{@device.online? ? 'online' : 'offline'}")
+      = link_to t("admin.devices.show.edit"), edit_admin_device_path(@device), class: "inline-flex items-center px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+      = button_to t("admin.devices.show.destroy"), admin_device_path(@device), method: :delete,
           class: "inline-flex items-center px-3 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50",
-          data: { turbo_confirm: "Удалить устройство?" }
+          data: { turbo_confirm: t("admin.devices.show.destroy_confirm") }
 
   dl class="grid grid-cols-1 gap-4 sm:grid-cols-3 mt-6"
     div
-      dt class="text-sm font-medium text-gray-500" Часовой пояс
+      dt class="text-sm font-medium text-gray-500" = t("admin.devices.show.timezone")
       dd class="mt-1 text-sm text-gray-900" = @device.time_zone
     div
-      dt class="text-sm font-medium text-gray-500" Последний heartbeat
+      dt class="text-sm font-medium text-gray-500" = t("admin.devices.show.last_heartbeat")
       dd class="mt-1 text-sm text-gray-900" = @device.last_heartbeat_at&.strftime('%d.%m.%Y %H:%M') || "—"
     div
-      dt class="text-sm font-medium text-gray-500" API Token
+      dt class="text-sm font-medium text-gray-500" = t("admin.devices.show.api_token")
       dd class="mt-1 text-sm text-gray-500 font-mono text-xs truncate" = @device.api_token
 
 div class="flex justify-between items-center mb-4"
-  h2 class="text-lg font-semibold text-gray-900" Расписание
-  = link_to "Управление слотами", admin_device_time_slots_path(@device), class: "text-sm text-indigo-600 hover:text-indigo-500"
+  h2 class="text-lg font-semibold text-gray-900" = t("admin.devices.show.schedule")
+  = link_to t("admin.devices.show.manage_slots"), admin_device_time_slots_path(@device), class: "text-sm text-indigo-600 hover:text-indigo-500"

@@ -1,18 +1,17 @@
 div class="flex justify-between items-center mb-6"
-  h1 class="text-2xl font-bold text-gray-900" Пользователи
+  h1 class="text-2xl font-bold text-gray-900" = t("admin.users.index.title")
   span class="text-sm text-gray-500"
-    | Всего:#{' '}
-    = @users.size
+    | #{t("admin.users.index.total")}: #{@users.size}
 
 div class="bg-white shadow overflow-hidden rounded-lg"
   table class="min-w-full divide-y divide-gray-200"
     thead class="bg-gray-50"
       tr
-        th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Пользователь
-        th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Email
-        th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Роль
-        th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Баланс
-        th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Зарегистрирован
+        th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("admin.users.index.name")
+        th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("admin.users.index.email")
+        th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("admin.users.index.role")
+        th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("admin.users.index.balance")
+        th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("admin.users.index.registered")
         th class="px-6 py-3"
     tbody class="bg-white divide-y divide-gray-200"
       - @users.each do |user|
@@ -22,7 +21,7 @@ div class="bg-white shadow overflow-hidden rounded-lg"
           td class="px-6 py-4 text-sm text-gray-500" = user.email
           td class="px-6 py-4"
             span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{user.admin? ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-700'}"
-              = user.role
+              = t("admin.users.index.#{user.role}_role")
           td class="px-6 py-4 text-sm text-gray-500"
             = number_to_currency(user.balance, unit: "₽", separator: ",", delimiter: " ", format: "%n %u")
           td class="px-6 py-4 text-sm text-gray-500" = user.created_at.strftime("%d.%m.%Y")
@@ -30,10 +29,10 @@ div class="bg-white shadow overflow-hidden rounded-lg"
             - if user != current_user
               = form_with url: admin_user_path(user), method: :patch, class: "inline-flex items-center space-x-2" do |f|
                 = f.select :role,
-                    User.roles.keys.map { |r| [r, r] },
+                    User.roles.keys.map { |r| [t("admin.users.index.#{r}_role"), r] },
                     { selected: user.role },
                     class: "text-sm border-gray-300 rounded-md shadow-sm py-1 pl-2 pr-8 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                = f.submit "Сохранить",
+                = f.submit t("common.save"),
                     class: "text-xs px-3 py-1.5 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 cursor-pointer"
             - else
-              span class="text-xs text-gray-400 italic" вы
+              span class="text-xs text-gray-400 italic" = t("admin.users.index.you")

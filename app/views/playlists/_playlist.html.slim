@@ -3,10 +3,11 @@
     h3 class="text-lg font-semibold text-gray-900" = playlist.name
     span class="text-sm text-gray-500"
       = playlist.items_count
-      |  треков
+      | #{' '}
+      = t("playlists.playlist_card.tracks")
   - if playlist.description.present?
     p class="mt-2 text-sm text-gray-500 line-clamp-2" = playlist.description
   div class="mt-4 flex items-center text-sm text-gray-500"
     span
-      => "Длительность:"
+      => "#{t('playlists.playlist_card.duration')}:"
       = playlist.formatted_duration

@@ -23,5 +23,11 @@ module Mediateca
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # I18n
+    config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{yml,yaml}")]
+    config.i18n.default_locale = :ru
+    config.i18n.available_locales = %i[ru en]
+    config.i18n.fallbacks = true
   end
 end

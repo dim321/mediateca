@@ -1,6 +1,6 @@
 div class="mb-6"
-  = link_to "← Плейлисты", playlists_path, class: "text-sm text-indigo-600 hover:text-indigo-500"
+  = link_to t("playlists.new.back"), playlists_path, class: "text-sm text-indigo-600 hover:text-indigo-500"
 
 div class="bg-white shadow rounded-lg p-6 max-w-lg"
-  h1 class="text-2xl font-bold text-gray-900 mb-6" Новый плейлист
+  h1 class="text-2xl font-bold text-gray-900 mb-6" = t("playlists.new.title")
   = render "form", playlist: @playlist

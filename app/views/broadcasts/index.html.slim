@@ -1,20 +1,20 @@
 div class="flex justify-between items-center mb-6"
-  h1 class="text-2xl font-bold text-gray-900" Мои трансляции
+  h1 class="text-2xl font-bold text-gray-900" = t("broadcasts.index.title")
 
 div class="flex space-x-2 mb-4"
-  = link_to "Все", broadcasts_path, class: "px-3 py-1 text-sm rounded-md #{params[:status].blank? ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
-  - { "scheduled" => "Запланированные", "playing" => "Идёт трансляция", "completed" => "Завершённые", "failed" => "Ошибка" }.each do |status, label|
-    = link_to label, broadcasts_path(status: status), class: "px-3 py-1 text-sm rounded-md #{params[:status] == status ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
+  = link_to t("broadcasts.index.all"), broadcasts_path, class: "px-3 py-1 text-sm rounded-md #{params[:status].blank? ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
+  - %w[scheduled playing completed failed].each do |status|
+    = link_to t("broadcasts.index.#{status}"), broadcasts_path(status: status), class: "px-3 py-1 text-sm rounded-md #{params[:status] == status ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
 
 - if @broadcasts.any?
   div class="bg-white shadow overflow-hidden rounded-lg"
     table class="min-w-full divide-y divide-gray-200"
       thead class="bg-gray-50"
         tr
-          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Плейлист
-          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Устройство
-          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Время
-          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Статус
+          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("broadcasts.index.playlist")
+          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("broadcasts.index.device")
+          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("broadcasts.index.time")
+          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("broadcasts.index.status")
       tbody class="bg-white divide-y divide-gray-200"
         - @broadcasts.each do |broadcast|
           = render partial: "broadcast", locals: { broadcast: broadcast }
@@ -22,5 +22,5 @@ div class="flex space-x-2 mb-4"
     == pagy_nav(@pagy) if @pagy && @pagy.pages > 1
 - else
   div class="bg-white shadow rounded-lg p-8 text-center"
-    p class="text-gray-500" У вас пока нет запланированных трансляций.
-    = link_to "Перейти к устройствам", devices_path, class: "text-indigo-600 hover:text-indigo-500 text-sm mt-2 inline-block"
+    p class="text-gray-500" = t("broadcasts.index.empty")
+    = link_to t("broadcasts.index.go_to_devices"), devices_path, class: "text-indigo-600 hover:text-indigo-500 text-sm mt-2 inline-block"

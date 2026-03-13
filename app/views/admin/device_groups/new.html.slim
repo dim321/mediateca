@@ -1,6 +1,6 @@
 .mb-6
-  = link_to "← Группы", admin_device_groups_path, class: "text-sm text-indigo-600 hover:text-indigo-500"
+  = link_to t("admin.device_groups.new.back"), admin_device_groups_path, class: "text-sm text-indigo-600 hover:text-indigo-500"
 
 .bg-white.shadow.rounded-lg.p-6.max-w-lg
-  h1.text-2xl.font-bold.text-gray-900.mb-6 Новая группа
+  h1.text-2xl.font-bold.text-gray-900.mb-6 = t("admin.device_groups.new.title")
   = render "form", group: @group

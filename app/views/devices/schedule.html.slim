@@ -1,5 +1,5 @@
 div class="mb-6"
-  = link_to "← Устройства", devices_path, class: "text-sm text-indigo-600 hover:text-indigo-500"
+  = link_to t("devices.schedule.back"), devices_path, class: "text-sm text-indigo-600 hover:text-indigo-500"
 
 div class="flex justify-between items-center mb-6"
   div
@@ -11,16 +11,16 @@ div class="flex justify-between items-center mb-6"
       |  (#{@device.time_zone})
   = form_with url: schedule_device_path(@device), method: :get, class: "flex items-center space-x-2" do |f|
     = f.date_field :date, value: @date, class: "rounded-md border-gray-300 shadow-sm text-sm px-3 py-2 border"
-    = f.submit "Показать", class: "px-3 py-2 bg-gray-100 text-sm font-medium rounded-md hover:bg-gray-200 cursor-pointer"
+    = f.submit t("common.show"), class: "px-3 py-2 bg-gray-100 text-sm font-medium rounded-md hover:bg-gray-200 cursor-pointer"
 
 - if @time_slots.any?
   div class="bg-white shadow overflow-hidden rounded-lg"
     table class="min-w-full divide-y divide-gray-200"
       thead class="bg-gray-50"
         tr
-          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Время
-          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Статус
-          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" Цена
+          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("devices.schedule.time")
+          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("devices.schedule.status")
+          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("devices.schedule.price")
           th class="px-6 py-3"
       tbody class="bg-white divide-y divide-gray-200"
         - @time_slots.each do |slot|
@@ -29,19 +29,16 @@ div class="flex justify-between items-center mb-6"
             td class="px-6 py-4"
               - status_class = { available: "bg-green-100 text-green-800", auction_active: "bg-yellow-100 text-yellow-800", sold: "bg-red-100 text-red-800" }.fetch(slot.slot_status&.to_sym, "bg-gray-100 text-gray-800")
               span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{status_class}"
-                = slot.slot_status&.humanize
+                = t("time_slot.status.#{slot.slot_status || 'available'}")
             td class="px-6 py-4 text-sm text-gray-900"
               = number_to_currency(slot.starting_price, unit: "₽", format: "%n %u")
             td class="px-6 py-4 text-right"
               - if slot.available?
-                = button_to "Запланировать", broadcasts_path,
+                = button_to t("devices.schedule.plan_broadcast"), broadcasts_path,
                     params: { broadcast: { time_slot_id: slot.id } },
                     method: :post,
-                    form: { data: { turbo_confirm: "Запланировать трансляцию?" } },
+                    form: { data: { turbo_confirm: t("devices.schedule.plan_confirm") } },
                     class: "text-sm text-indigo-600 hover:text-indigo-900"
 - else
   div class="bg-white shadow rounded-lg p-8 text-center"
-    p class="text-gray-500"
-      | Нет слотов на#{' '}
-      = @date
-      | .
+    p class="text-gray-500" = t("devices.schedule.no_slots", date: @date)

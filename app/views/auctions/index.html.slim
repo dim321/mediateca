@@ -1,10 +1,10 @@
 div class="flex justify-between items-center mb-6"
-  h1 class="text-2xl font-bold text-gray-900" Аукционы
+  h1 class="text-2xl font-bold text-gray-900" = t("auctions.index.title")
 
 div class="flex space-x-2 mb-4"
-  = link_to "Все", auctions_path, class: "px-3 py-1 text-sm rounded-md #{params[:status].blank? ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
+  = link_to t("common.all"), auctions_path, class: "px-3 py-1 text-sm rounded-md #{params[:status].blank? ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
   - %w[open closed].each do |status|
-    = link_to status.humanize, auctions_path(status: status), class: "px-3 py-1 text-sm rounded-md #{params[:status] == status ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
+    = link_to t("auctions.index.#{status}"), auctions_path(status: status), class: "px-3 py-1 text-sm rounded-md #{params[:status] == status ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:text-gray-700'}"
 
 - if @auctions&.any?
   div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
@@ -15,22 +15,22 @@ div class="flex space-x-2 mb-4"
             h3 class="font-semibold text-gray-900" = auction.time_slot.broadcast_device.name
             p class="text-xs text-gray-500" = auction.time_slot.display_time_in_zone
           span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{auction.open? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}"
-            = auction.auction_status.humanize
+            = t("auctions.status.#{auction.auction_status}")
         dl class="space-y-1 text-sm"
           div class="flex justify-between"
-            dt class="text-gray-500" Начальная цена:
+            dt class="text-gray-500" = "#{t('auctions.index.starting_price')}:"
             dd class="font-medium" = number_to_currency(auction.starting_price, unit: "₽", format: "%n %u")
           div class="flex justify-between"
-            dt class="text-gray-500" Текущая ставка:
+            dt class="text-gray-500" = "#{t('auctions.show.current_bid')}:"
             dd class="font-bold text-indigo-600"
               = auction.current_highest_bid ? number_to_currency(auction.current_highest_bid, unit: "₽", format: "%n %u") : "—"
           div class="flex justify-between"
-            dt class="text-gray-500" Закрытие:
+            dt class="text-gray-500" = "#{t('auctions.show.closing')}:"
             dd = auction.closes_at&.strftime('%d.%m %H:%M') || "—"
         div class="mt-4"
-          = link_to "Подробнее", auction_path(auction), class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 w-full justify-center"
+          = link_to t("auctions.index.more"), auction_path(auction), class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 w-full justify-center"
   div class="mt-4"
     == pagy_nav(@pagy) if @pagy&.pages.to_i > 1
 - else
   div class="bg-white shadow rounded-lg p-8 text-center"
-    p class="text-gray-500" Нет активных аукционов.
+    p class="text-gray-500" = t("auctions.index.empty")
