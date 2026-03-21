@@ -244,7 +244,6 @@ ru:
         title: "Редактировать устройство"
         back: "← Устройство"
         back_with_name: "← %{name}"
-        back_with_name: "← %{name}"
       form:
         name: "Название"
         city: "Город"

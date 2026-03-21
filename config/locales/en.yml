@@ -244,7 +244,6 @@ en:
         title: "Edit device"
         back: "Device"
         back_with_name: "← %{name}"
-        back_with_name: "← %{name}"
       form:
         name: "Name"
         city: "City"
