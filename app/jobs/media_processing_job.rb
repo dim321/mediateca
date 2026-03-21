@@ -24,7 +24,8 @@ class MediaProcessingJob < ApplicationJob
       media_file.failed!
     end
 
-    # Транслируем обновление статуса всем подключённым клиентам
+    # Транслируем обновление статуса и длительности всем подключённым клиентам
     media_file.broadcast_status_update
+    media_file.broadcast_duration_update
   end
 end

@@ -50,4 +50,14 @@ class MediaFile < ApplicationRecord
       locals: { media_file: self }
     )
   end
+
+  # Транслирует обновление длительности (update = только содержимое turbo-frame, как в родительской вьюхе)
+  def broadcast_duration_update
+    broadcast_update_to(
+      "media_file_#{id}_status",
+      target: "media_file_#{id}_duration",
+      partial: "media_files/duration",
+      locals: { media_file: self }
+    )
+  end
 end

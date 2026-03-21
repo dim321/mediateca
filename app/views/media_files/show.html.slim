@@ -20,7 +20,9 @@ div class="bg-white shadow overflow-hidden rounded-lg"
         dd class="mt-1 text-sm text-gray-900" = @media_file.format.upcase
       div
         dt class="text-sm font-medium text-gray-500" = t("media_files.show.duration")
-        dd class="mt-1 text-sm text-gray-900" = @media_file.formatted_duration
+        dd class="mt-1 text-sm text-gray-900"
+          = turbo_frame_tag "media_file_#{@media_file.id}_duration" do
+            = render "duration", media_file: @media_file
       div
         dt class="text-sm font-medium text-gray-500" = t("media_files.show.size")
         dd class="mt-1 text-sm text-gray-900" = @media_file.formatted_file_size
