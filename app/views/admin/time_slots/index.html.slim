@@ -8,10 +8,10 @@ div class="flex justify-between items-center mb-6"
     = form_with url: admin_device_time_slots_path(@device), method: :get, class: "flex items-center space-x-2", data: { turbo_frame: "_top" } do |f|
       = f.date_field :date, value: @date, class: "rounded-md border-gray-300 shadow-sm text-sm px-3 py-2 border"
       = f.submit t("admin.time_slots.index.show"), class: "px-3 py-2 bg-gray-100 text-sm font-medium rounded-md hover:bg-gray-200 cursor-pointer"
-      = f.submit t("admin.time_slots.index.generate"),
-          formaction: generate_admin_device_time_slots_path(@device),
-          formmethod: :post,
-          class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700"
+
+    = form_with url: generate_admin_device_time_slots_path(@device), method: :post, class: "inline-flex items-center" do |f|
+      = hidden_field_tag :date, @date.strftime("%Y-%m-%d")
+      = f.submit t("admin.time_slots.index.generate"), class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 cursor-pointer"
 
 - if @time_slots.any?
   div class="bg-white shadow overflow-hidden rounded-lg"

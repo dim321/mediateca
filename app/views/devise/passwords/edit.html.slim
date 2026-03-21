@@ -16,6 +16,6 @@ h2 = t('devise.passwords.edit.change_your_password')
     p = f.password_field :password_confirmation, autocomplete: "new-password"
 
   div class="actions"
-    = f.submit "Change my password"
+    = f.submit t("devise.passwords.edit.change_my_password")
 
 = render "devise/shared/links"
