@@ -1,31 +1,306 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
+# Application translations (English)
 en:
-  hello: "Hello world"
+  date:
+    formats:
+      long: "%B %d, %Y"
+      short: "%b %d"
+  time:
+    formats:
+      long: "%B %d, %Y %H:%M"
+      short: "%b %d %H:%M"
+
+  app_name: Mediateca
+
+  common:
+    user_not_authorized: "You don't have access to this action."
+    record_not_found: "Record not found."
+    require_admin: "Admin access only."
+    all: "All"
+    filter: "Filter"
+    reset: "Reset"
+    show: "Show"
+    create: "Create"
+    save: "Save"
+    edit: "Edit"
+    destroy: "Delete"
+    remove: "Remove"
+    add: "Add"
+    back: "Back"
+    schedule: "Schedule"
+    open_menu: "Open menu"
+
+  nav:
+    media_library: "Media Library"
+    playlists: "Playlists"
+    devices: "Devices"
+    auctions: "Auctions"
+    broadcasts: "Broadcasts"
+    admin: "Admin"
+    sign_in: "Sign in"
+    sign_up: "Sign up"
+    sign_out: "Sign out"
+
+  media_files:
+    index:
+      title: "Media Library"
+      upload_file: "Upload file"
+      upload_media: "Upload media file"
+      title_label: "Title"
+      file_label: "File (mp3, aac, wav, mp4, avi, mov, up to 100 MB)"
+      upload: "Upload"
+      all: "All"
+      audio: "Audio"
+      video: "Video"
+      name: "Name"
+      type: "Type"
+      format: "Format"
+      duration: "Duration"
+      size: "Size"
+      status: "Status"
+      empty: "No uploaded files"
+      empty_hint: "Upload your first media file to get started"
+    show:
+      back: "Back to library"
+      delete: "Delete file"
+      delete_confirm: "Are you sure?"
+      format: "Format"
+      duration: "Duration"
+      size: "Size"
+      processing_status: "Processing status"
+      audio: "Audio"
+      video: "Video"
+
+  processing_status:
+    ready: "Ready"
+    pending: "Processing..."
+    processing: "Processing..."
+    failed: "Error"
+    unknown: "Unknown"
+
+  playlists:
+    index:
+      title: "Playlists"
+      create: "Create playlist"
+      empty: "No playlists"
+      create_first: "Create your first playlist"
+    new:
+      title: "New playlist"
+      back: "Back to playlists"
+    edit:
+      title: "Edit playlist"
+      back: "Back to playlist"
+    show:
+      back: "Back to playlists"
+      edit: "Edit"
+      destroy: "Delete"
+      destroy_confirm: "Delete playlist?"
+      tracks: "tracks"
+      add_file: "Add file"
+      select_file: "Select file"
+      add: "Add"
+      remove: "Remove"
+      remove_confirm: "Remove from playlist?"
+      empty: "Playlist is empty"
+      empty_hint: "Add media files from the library"
+      name: "Name"
+      type: "Type"
+      duration: "Duration"
+    form:
+      name: "Name"
+      description: "Description (optional)"
+      create: "Create"
+      save: "Save"
+    playlist_card:
+      tracks: "tracks"
+      duration: "Duration"
+
+  devices:
+    index:
+      title: "Devices"
+      hint: "Choose a device to view schedule and plan broadcasts"
+      city: "City"
+      city_placeholder: "Filter by city"
+      schedule: "Schedule"
+      empty: "No available devices."
+    schedule:
+      back: "← Devices"
+      time: "Time"
+      status: "Status"
+      price: "Price"
+      plan_broadcast: "Plan broadcast"
+      plan_confirm: "Plan broadcast?"
+      no_slots: "No slots on %{date}."
+      select_playlist: "Select playlist"
+      no_playlists: "Create a playlist first"
+      actions: "Actions"
+    status:
+      online: "Online"
+      offline: "Offline"
+
+  time_slot:
+    status:
+      available: "Available"
+      auction_active: "Auction active"
+      sold: "Sold"
+      reserved: "Reserved"
+
+  broadcasts:
+    index:
+      title: "My broadcasts"
+      all: "All"
+      scheduled: "Scheduled"
+      playing: "Playing"
+      completed: "Completed"
+      failed: "Failed"
+      playlist: "Playlist"
+      device: "Device"
+      time: "Time"
+      status: "Status"
+      empty: "You have no scheduled broadcasts yet."
+      go_to_devices: "Go to devices"
+    status:
+      scheduled: "Scheduled"
+      playing: "Playing"
+      completed: "Completed"
+      failed: "Failed"
+
+  auctions:
+    status:
+      open: "Open"
+      closed: "Closed"
+      cancelled: "Cancelled"
+    index:
+      title: "Auctions"
+      all: "All"
+      open: "Open"
+      closed: "Closed"
+      starting_price: "Starting price"
+      current_bid: "Current bid"
+      closing: "Closing"
+      more: "Details"
+      empty: "No active auctions."
+    show:
+      back: "Auctions"
+      current_bid: "Current bid"
+      starting_price: "Starting price"
+      closing: "Closing"
+      bid_history: "Bid history"
+      no_bids: "No bids yet."
+      place_bid: "Place bid"
+      your_balance: "Your balance"
+      bid_amount: "Bid amount"
+      submit_bid: "Place bid"
+      my_bids: "My bids"
+
+  balances:
+    show:
+      title: "My balance"
+      current: "Current balance"
+      deposit: "Deposit"
+      amount_label: "Amount (RUB)"
+      amount_placeholder: "1000"
+      deposit_btn: "Deposit"
+      history: "Transaction history"
+      date: "Date"
+      description: "Description"
+      type: "Type"
+      amount: "Amount"
+      deposit_type: "Deposit"
+      withdrawal_type: "Withdrawal"
+      empty: "No transactions."
+
+  admin:
+    nav:
+      title: "Mediateca Admin"
+      devices: "Devices"
+      groups: "Groups"
+      users: "Users"
+      to_site: "To site"
+      sign_out: "Sign out"
+    devices:
+      index:
+        title: "Devices"
+        add: "Add device"
+        name: "Name"
+        city: "City"
+        address: "Address"
+        status: "Status"
+        schedule: "Schedule"
+        edit: "Edit"
+      show:
+        back: "Devices"
+        edit: "Edit"
+        destroy: "Delete"
+        destroy_confirm: "Delete device?"
+        timezone: "Timezone"
+        last_heartbeat: "Last heartbeat"
+        api_token: "API Token"
+        schedule: "Schedule"
+        manage_slots: "Manage slots"
+      new:
+        title: "New device"
+        back: "Devices"
+      edit:
+        title: "Edit device"
+        back: "Device"
+        back_with_name: "← %{name}"
+      form:
+        name: "Name"
+        city: "City"
+        address: "Address"
+        timezone: "Timezone"
+        description: "Description (optional)"
+        create: "Create"
+        save: "Save"
+    device_groups:
+      index:
+        title: "Device groups"
+        create: "Create group"
+        devices_count: "Devices"
+        edit: "Edit"
+        destroy: "Delete"
+        destroy_confirm: "Delete group?"
+        empty: "No device groups."
+      show:
+        back: "Groups"
+        edit: "Edit"
+        destroy: "Delete"
+        destroy_confirm: "Delete group?"
+        devices_in_group: "Devices in group (%{count})"
+        add_devices: "Add devices"
+        remove_confirm: "Remove device from group?"
+      new:
+        title: "New group"
+        back: "Groups"
+      edit:
+        title: "Edit group"
+        back: "Group"
+      form:
+        name: "Name"
+        description: "Description"
+        create: "Create"
+        save: "Save"
+    time_slots:
+      index:
+        back: "Back"
+        title: "Schedule"
+        show: "Show"
+        generate: "Generate slots"
+        time: "Time"
+        status: "Status"
+        price: "Initial price"
+        empty: "No slots on %{date}."
+        empty_hint: "Click «Generate slots» to create schedule."
+    users:
+      index:
+        title: "Users"
+        email: "Email"
+        name: "Name"
+        role: "Role"
+        balance: "Balance"
+        registered: "Registered"
+        user_role: "User"
+        admin_role: "Admin"
+        change_role: "Change role"
+        total: "Total"
+        you: "you"

@@ -1,3 +1,7 @@
+---
+alwaysApply: true
+---
+
 
 When generating RSpec tests, follow these best practices to ensure they are comprehensive, readable, and maintainable:
 

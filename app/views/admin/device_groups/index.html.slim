@@ -1,0 +1,28 @@
+div class="flex justify-between items-center mb-6"
+  h1 class="text-2xl font-bold text-gray-900" = t("admin.device_groups.index.title")
+  = link_to t("admin.device_groups.index.create"), new_admin_device_group_path, class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700"
+
+- if @groups.any?
+  div class="bg-white shadow overflow-hidden rounded-lg"
+    table class="min-w-full divide-y divide-gray-200"
+      thead class="bg-gray-50"
+        tr
+          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("admin.device_groups.form.name")
+          th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("admin.device_groups.index.devices_count")
+          th class="px-6 py-3"
+      tbody class="bg-white divide-y divide-gray-200"
+        - @groups.each do |group|
+          tr
+            td class="px-6 py-4"
+              = link_to group.name, admin_device_group_path(group), class: "text-indigo-600 hover:text-indigo-900 font-medium"
+              - if group.description.present?
+                p class="text-xs text-gray-400 mt-1" = group.description
+            td class="px-6 py-4 text-sm text-gray-500" = group.devices_count
+            td class="px-6 py-4 text-right text-sm"
+              = link_to t("common.edit"), edit_admin_device_group_path(group), class: "text-gray-600 hover:text-gray-900 mr-3"
+              = button_to t("common.destroy"), admin_device_group_path(group), method: :delete,
+                  class: "text-red-600 hover:text-red-900",
+                  data: { turbo_confirm: t("admin.device_groups.index.destroy_confirm") }
+- else
+  div class="bg-white shadow rounded-lg p-8 text-center"
+    p class="text-gray-500" = t("admin.device_groups.index.empty")

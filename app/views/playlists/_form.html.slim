@@ -1,0 +1,17 @@
+= form_with model: playlist, class: "space-y-4" do |f|
+  - if playlist.errors.any?
+    div class="rounded-md bg-red-50 p-4"
+      ul class="list-disc pl-5 text-sm text-red-700"
+        - playlist.errors.full_messages.each do |msg|
+          li = msg
+
+  div
+    = f.label :name, t("playlists.form.name"), class: "block text-sm font-medium text-gray-700"
+    = f.text_field :name, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+
+  div
+    = f.label :description, t("playlists.form.description"), class: "block text-sm font-medium text-gray-700"
+    = f.text_area :description, rows: 3, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
+
+  div
+    = f.submit playlist.persisted? ? t("playlists.form.save") : t("playlists.form.create"), class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 cursor-pointer"

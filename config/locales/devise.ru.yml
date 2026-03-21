@@ -1,0 +1,87 @@
+# Дополнительные переводы Devise: https://github.com/heartcombo/devise/wiki/I18n
+
+ru:
+  devise:
+    confirmations:
+      confirmed: "Ваш адрес электронной почты успешно подтверждён."
+      send_instructions: "В течение нескольких минут вы получите письмо с инструкциями по подтверждению вашего email."
+      send_paranoid_instructions: "Если ваш email есть в нашей базе, вы получите письмо с инструкциями по подтверждению."
+    failure:
+      already_authenticated: "Вы уже вошли в систему."
+      inactive: "Ваш аккаунт ещё не активирован."
+      invalid: "Неверный %{authentication_keys} или пароль."
+      locked: "Ваш аккаунт заблокирован."
+      last_attempt: "У вас осталась одна попытка до блокировки аккаунта."
+      not_found_in_database: "Неверный %{authentication_keys} или пароль."
+      timeout: "Ваша сессия истекла. Пожалуйста, войдите снова."
+      unauthenticated: "Для продолжения необходимо войти или зарегистрироваться."
+      unconfirmed: "Для продолжения необходимо подтвердить ваш email."
+    mailer:
+      confirmation_instructions:
+        subject: "Инструкции по подтверждению"
+      reset_password_instructions:
+        subject: "Инструкции по сбросу пароля"
+      unlock_instructions:
+        subject: "Инструкции по разблокировке"
+      email_changed:
+        subject: "Email изменён"
+      password_change:
+        subject: "Пароль изменён"
+    omniauth_callbacks:
+      failure: "Не удалось войти через %{kind}: \"%{reason}\"."
+      success: "Успешный вход через %{kind}."
+    shared:
+      log_in: "Войти"
+      sign_up: "Регистрация"
+      forgot_password: "Забыли пароль?"
+      no_confirmation: "Не получили письмо с подтверждением?"
+      no_unlock: "Не получили инструкции по разблокировке?"
+      sign_in_with: "Войти через %{provider}"
+    sessions:
+      new:
+        title: "Вход в аккаунт"
+        email: "Email"
+        password: "Пароль"
+        remember_me: "Запомнить меня"
+        forgot_password: "Забыли пароль?"
+        sign_in: "Войти"
+        no_account: "Нет аккаунта?"
+        sign_up_link: "Зарегистрироваться"
+      signed_in: "Вход выполнен успешно."
+      signed_out: "Выход выполнен успешно."
+      already_signed_out: "Выход выполнен успешно."
+    passwords:
+      edit:
+        change_your_password: "Изменить пароль"
+        new_password: "Новый пароль"
+        confirm_password: "Подтверждение пароля"
+        min_chars: "минимум %{count} символов"
+        change_my_password: "Изменить пароль"
+      no_token: "Вы не можете открыть эту страницу без перехода по ссылке из письма. Если вы перешли по ссылке, убедитесь, что использовали полный URL."
+      send_instructions: "В течение нескольких минут вы получите письмо с инструкциями по сбросу пароля."
+      send_paranoid_instructions: "Если ваш email есть в базе, вы получите ссылку для восстановления пароля."
+      updated: "Ваш пароль успешно изменён. Вы вошли в систему."
+      updated_not_active: "Ваш пароль успешно изменён."
+    registrations:
+      destroyed: "Ваш аккаунт успешно удалён. До свидания!"
+      signed_up: "Добро пожаловать! Вы успешно зарегистрировались."
+      signed_up_but_inactive: "Вы зарегистрировались, но мы не смогли войти — аккаунт ещё не активирован."
+      signed_up_but_locked: "Вы зарегистрировались, но мы не смогли войти — аккаунт заблокирован."
+      signed_up_but_unconfirmed: "На ваш email отправлено письмо с ссылкой для подтверждения. Перейдите по ссылке, чтобы активировать аккаунт."
+      update_needs_confirmation: "Аккаунт обновлён. Проверьте email и перейдите по ссылке для подтверждения нового адреса."
+      updated: "Ваш аккаунт успешно обновлён."
+      updated_but_not_signed_in: "Аккаунт обновлён. Поскольку пароль изменён, войдите снова."
+    unlocks:
+      send_instructions: "В течение нескольких минут вы получите письмо с инструкциями по разблокировке."
+      send_paranoid_instructions: "Если аккаунт существует, вы получите письмо с инструкциями."
+      unlocked: "Аккаунт разблокирован. Войдите для продолжения."
+  errors:
+    messages:
+      already_confirmed: "уже подтверждён, попробуйте войти"
+      confirmation_period_expired: "подтверждение истекло, запросите новое"
+      expired: "истёк, запросите новый"
+      not_found: "не найден"
+      not_locked: "не был заблокирован"
+      not_saved:
+        one: "1 ошибка не позволила сохранить %{resource}:"
+        other: "%{count} ошибок не позволили сохранить %{resource}:"

@@ -1,4 +1,6 @@
 class MediaFile < ApplicationRecord
+  include Turbo::Broadcastable
+
   # === Associations ===
   belongs_to :user
   has_one_attached :file
@@ -30,7 +32,6 @@ class MediaFile < ApplicationRecord
 
   def formatted_duration
     return "—" unless duration
-
     minutes = duration / 60
     seconds = duration % 60
     "#{minutes}:#{seconds.to_s.rjust(2, '0')}"
@@ -38,5 +39,15 @@ class MediaFile < ApplicationRecord
 
   def formatted_file_size
     ActiveSupport::NumberHelper.number_to_human_size(file_size)
+  end
+
+  # Транслирует обновление статуса для Turbo Stream
+  def broadcast_status_update
+    broadcast_replace_to(
+      "media_file_#{id}_status",
+      target: "media_file_#{id}_status",
+      partial: "media_files/processing_status",
+      locals: { media_file: self }
+    )
   end
 end

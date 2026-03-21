@@ -1,0 +1,306 @@
+# Переводы приложения (Русский)
+ru:
+  date:
+    formats:
+      long: "%d %B %Y"
+      short: "%d %b"
+  time:
+    formats:
+      long: "%d %B %Y, %H:%M"
+      short: "%d %b %H:%M"
+
+  app_name: Mediateca
+
+  common:
+    user_not_authorized: "У вас нет доступа к этому действию."
+    record_not_found: "Запись не найдена."
+    require_admin: "Доступ только для администраторов."
+    all: "Все"
+    filter: "Фильтр"
+    reset: "Сбросить"
+    show: "Показать"
+    create: "Создать"
+    save: "Сохранить"
+    edit: "Изменить"
+    destroy: "Удалить"
+    remove: "Убрать"
+    add: "Добавить"
+    back: "Назад"
+    schedule: "Расписание"
+    open_menu: "Открыть меню"
+
+  nav:
+    media_library: "Медиатека"
+    playlists: "Плейлисты"
+    devices: "Устройства"
+    auctions: "Аукционы"
+    broadcasts: "Трансляции"
+    admin: "Админ"
+    sign_in: "Вход"
+    sign_up: "Регистрация"
+    sign_out: "Выход"
+
+  media_files:
+    index:
+      title: "Медиатека"
+      upload_file: "Загрузить файл"
+      upload_media: "Загрузить медиафайл"
+      title_label: "Название"
+      file_label: "Файл (mp3, aac, wav, mp4, avi, mov, до 100 МБ)"
+      upload: "Загрузить"
+      all: "Все"
+      audio: "Аудио"
+      video: "Видео"
+      name: "Название"
+      type: "Тип"
+      format: "Формат"
+      duration: "Длительность"
+      size: "Размер"
+      status: "Статус"
+      empty: "Нет загруженных файлов"
+      empty_hint: "Загрузите первый медиафайл, чтобы начать работу"
+    show:
+      back: "← К медиатеке"
+      delete: "Удалить файл"
+      delete_confirm: "Вы уверены?"
+      format: "Формат"
+      duration: "Длительность"
+      size: "Размер"
+      processing_status: "Статус обработки"
+      audio: "Аудио"
+      video: "Видео"
+
+  processing_status:
+    ready: "Готов"
+    pending: "Обработка..."
+    processing: "Обработка..."
+    failed: "Ошибка"
+    unknown: "Неизвестно"
+
+  playlists:
+    index:
+      title: "Плейлисты"
+      create: "Создать плейлист"
+      empty: "Нет плейлистов"
+      create_first: "Создайте первый плейлист"
+    new:
+      title: "Новый плейлист"
+      back: "← Плейлисты"
+    edit:
+      title: "Редактировать плейлист"
+      back: "← К плейлисту"
+    show:
+      back: "← Плейлисты"
+      edit: "Редактировать"
+      destroy: "Удалить"
+      destroy_confirm: "Удалить плейлист?"
+      tracks: "треков"
+      add_file: "Добавить файл"
+      select_file: "Выберите файл"
+      add: "Добавить"
+      remove: "Убрать"
+      remove_confirm: "Убрать из плейлиста?"
+      empty: "Плейлист пуст"
+      empty_hint: "Добавьте медиафайлы из библиотеки"
+      name: "Название"
+      type: "Тип"
+      duration: "Длительность"
+    form:
+      name: "Название"
+      description: "Описание (необязательно)"
+      create: "Создать"
+      save: "Сохранить"
+    playlist_card:
+      tracks: "треков"
+      duration: "Длительность"
+
+  devices:
+    index:
+      title: "Устройства"
+      hint: "Выберите устройство для просмотра расписания и планирования трансляций"
+      city: "Город"
+      city_placeholder: "Фильтр по городу"
+      schedule: "Расписание"
+      empty: "Нет доступных устройств."
+    schedule:
+      back: "← Устройства"
+      time: "Время"
+      status: "Статус"
+      price: "Цена"
+      plan_broadcast: "Запланировать"
+      plan_confirm: "Запланировать трансляцию?"
+      no_slots: "Нет слотов на %{date}."
+      select_playlist: "Выберите плейлист"
+      no_playlists: "Сначала создайте плейлист"
+      actions: "Действия"
+    status:
+      online: "В сети"
+      offline: "Не в сети"
+
+  time_slot:
+    status:
+      available: "Доступен"
+      auction_active: "Аукцион"
+      sold: "Продан"
+      reserved: "Зарезервирован"
+
+  broadcasts:
+    index:
+      title: "Мои трансляции"
+      all: "Все"
+      scheduled: "Запланированные"
+      playing: "Идёт трансляция"
+      completed: "Завершённые"
+      failed: "Ошибка"
+      playlist: "Плейлист"
+      device: "Устройство"
+      time: "Время"
+      status: "Статус"
+      empty: "У вас пока нет запланированных трансляций."
+      go_to_devices: "Перейти к устройствам"
+    status:
+      scheduled: "Запланировано"
+      playing: "Идёт"
+      completed: "Завершено"
+      failed: "Ошибка"
+
+  auctions:
+    status:
+      open: "Открыт"
+      closed: "Закрыт"
+      cancelled: "Отменён"
+    index:
+      title: "Аукционы"
+      all: "Все"
+      open: "Открытые"
+      closed: "Закрытые"
+      starting_price: "Начальная цена"
+      current_bid: "Текущая ставка"
+      closing: "Закрытие"
+      more: "Подробнее"
+      empty: "Нет активных аукционов."
+    show:
+      back: "← Аукционы"
+      current_bid: "Текущая ставка"
+      starting_price: "Начальная цена"
+      closing: "Закрытие"
+      bid_history: "История ставок"
+      no_bids: "Пока нет ставок."
+      place_bid: "Сделать ставку"
+      your_balance: "Ваш баланс"
+      bid_amount: "Сумма ставки"
+      submit_bid: "Сделать ставку"
+      my_bids: "Мои ставки"
+
+  balances:
+    show:
+      title: "Мой баланс"
+      current: "Текущий баланс"
+      deposit: "Пополнить баланс"
+      amount_label: "Сумма (руб.)"
+      amount_placeholder: "1000"
+      deposit_btn: "Пополнить"
+      history: "История транзакций"
+      date: "Дата"
+      description: "Описание"
+      type: "Тип"
+      amount: "Сумма"
+      deposit_type: "Пополнение"
+      withdrawal_type: "Списание"
+      empty: "Нет транзакций."
+
+  admin:
+    nav:
+      title: "Mediateca — Админ"
+      devices: "Устройства"
+      groups: "Группы"
+      users: "Пользователи"
+      to_site: "На сайт"
+      sign_out: "Выход"
+    devices:
+      index:
+        title: "Устройства"
+        add: "Добавить устройство"
+        name: "Название"
+        city: "Город"
+        address: "Адрес"
+        status: "Статус"
+        schedule: "Расписание"
+        edit: "Изменить"
+      show:
+        back: "← Устройства"
+        edit: "Изменить"
+        destroy: "Удалить"
+        destroy_confirm: "Удалить устройство?"
+        timezone: "Часовой пояс"
+        last_heartbeat: "Последний heartbeat"
+        api_token: "API Token"
+        schedule: "Расписание"
+        manage_slots: "Управление слотами"
+      new:
+        title: "Новое устройство"
+        back: "← Устройства"
+      edit:
+        title: "Редактировать устройство"
+        back: "← Устройство"
+        back_with_name: "← %{name}"
+      form:
+        name: "Название"
+        city: "Город"
+        address: "Адрес"
+        timezone: "Часовой пояс"
+        description: "Описание (необязательно)"
+        create: "Создать"
+        save: "Сохранить"
+    device_groups:
+      index:
+        title: "Группы устройств"
+        create: "Создать группу"
+        devices_count: "Устройств"
+        edit: "Изменить"
+        destroy: "Удалить"
+        destroy_confirm: "Удалить группу?"
+        empty: "Нет групп устройств."
+      show:
+        back: "← Группы"
+        edit: "Изменить"
+        destroy: "Удалить"
+        destroy_confirm: "Удалить группу?"
+        devices_in_group: "Устройства в группе (%{count})"
+        add_devices: "Добавить устройства"
+        remove_confirm: "Убрать устройство из группы?"
+      new:
+        title: "Новая группа"
+        back: "← Группы"
+      edit:
+        title: "Редактировать группу"
+        back: "← Группа"
+      form:
+        name: "Название"
+        description: "Описание"
+        create: "Создать"
+        save: "Сохранить"
+    time_slots:
+      index:
+        back: "← Назад"
+        title: "Расписание"
+        show: "Показать"
+        generate: "Генерировать слоты"
+        time: "Время"
+        status: "Статус"
+        price: "Начальная цена"
+        empty: "Нет слотов на %{date}."
+        empty_hint: "Нажмите «Генерировать слоты» для создания расписания."
+    users:
+      index:
+        title: "Пользователи"
+        email: "Email"
+        name: "Имя"
+        role: "Роль"
+        balance: "Баланс"
+        registered: "Зарегистрирован"
+        user_role: "Пользователь"
+        admin_role: "Администратор"
+        change_role: "Изменить роль"
+        total: "Всего"
+        you: "вы"
