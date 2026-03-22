@@ -13,7 +13,7 @@ class PlaylistItemsController < ApplicationController
     end
 
     if saved
-      redirect_to @playlist, notice: "Файл добавлен в плейлист."
+      redirect_to @playlist, notice: t("playlist_items.flash.added")
     else
       redirect_to @playlist, alert: @item.errors.full_messages.join(", ")
     end
@@ -23,7 +23,7 @@ class PlaylistItemsController < ApplicationController
     authorize @playlist, :update?
 
     if @item.update(playlist_item_params)
-      redirect_to @playlist, notice: "Позиция обновлена."
+      redirect_to @playlist, notice: t("playlist_items.flash.position_updated")
     else
       redirect_to @playlist, alert: @item.errors.full_messages.join(", ")
     end
@@ -32,7 +32,7 @@ class PlaylistItemsController < ApplicationController
   def destroy
     authorize @playlist, :update?
     @item.destroy!
-    redirect_to @playlist, notice: "Файл удалён из плейлиста."
+    redirect_to @playlist, notice: t("playlist_items.flash.removed")
   end
 
   private

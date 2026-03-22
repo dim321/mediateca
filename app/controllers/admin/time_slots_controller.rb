@@ -17,7 +17,7 @@ module Admin
       existing = @device.time_slots.for_date(date)
       if existing.any?
         redirect_to admin_device_time_slots_path(@device, date: date),
-                    alert: "Слоты на #{date} уже созданы."
+                    alert: t("admin.time_slots.flash.slots_already_exist", date: I18n.l(date, format: :long))
         return
       end
 
@@ -40,13 +40,13 @@ module Admin
       TimeSlot.insert_all(slots)
 
       redirect_to admin_device_time_slots_path(@device, date: date),
-                  notice: "Создано 48 слотов на #{date}."
+                  notice: t("admin.time_slots.flash.generated", date: I18n.l(date, format: :long))
     end
 
     def update
       if @time_slot.update(time_slot_params)
         redirect_back fallback_location: admin_device_path(@time_slot.broadcast_device),
-                      notice: "Цена обновлена."
+                      notice: t("admin.time_slots.flash.price_updated")
       else
         redirect_back fallback_location: admin_device_path(@time_slot.broadcast_device),
                       alert: @time_slot.errors.full_messages.join(", ")

@@ -8,18 +8,19 @@ module Admin
 
     def update
       if @user == current_user
-        redirect_to admin_users_path, alert: "Нельзя изменить собственную роль."
+        redirect_to admin_users_path, alert: t("admin.users.flash.cannot_change_own_role")
         return
       end
 
       role = params.dig(:user, :role).to_s
       unless User.roles.key?(role)
-        redirect_to admin_users_path, alert: "Недопустимая роль: «#{role}»."
+        redirect_to admin_users_path, alert: t("admin.users.flash.invalid_role", role: role)
         return
       end
 
       @user.update!(role: role)
-      redirect_to admin_users_path, notice: "Роль пользователя «#{@user.full_name}» изменена на «#{role}»."
+      role_label = t("admin.users.roles.#{role}")
+      redirect_to admin_users_path, notice: t("admin.users.flash.role_updated", name: @user.full_name, role: role_label)
     rescue ActiveRecord::RecordInvalid => e
       redirect_to admin_users_path, alert: e.message
     end

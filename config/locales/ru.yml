@@ -69,6 +69,16 @@ ru:
       processing_status: "Статус обработки"
       audio: "Аудио"
       video: "Видео"
+    flash:
+      upload_queued: "Файл успешно загружен и отправлен на обработку."
+      destroy_blocked: "Невозможно удалить файл, используемый в плейлисте."
+      destroyed: "Файл удалён."
+
+  playlist_items:
+    flash:
+      added: "Файл добавлен в плейлист."
+      position_updated: "Позиция обновлена."
+      removed: "Файл удалён из плейлиста."
 
   processing_status:
     ready: "Готов"
@@ -113,6 +123,11 @@ ru:
     playlist_card:
       tracks: "треков"
       duration: "Длительность"
+    flash:
+      created: "Плейлист создан."
+      updated: "Плейлист обновлён."
+      destroyed: "Плейлист удалён."
+      reordered: "Порядок обновлён."
 
   devices:
     index:
@@ -163,6 +178,12 @@ ru:
       playing: "Идёт"
       completed: "Завершено"
       failed: "Ошибка"
+    flash:
+      scheduled: "Трансляция запланирована."
+
+  bids:
+    flash:
+      accepted: "Ставка принята: %{amount}."
 
   auctions:
     status:
@@ -208,6 +229,8 @@ ru:
       deposit_type: "Пополнение"
       withdrawal_type: "Списание"
       empty: "Нет транзакций."
+    flash:
+      deposited: "Баланс пополнен на %{amount}."
 
   admin:
     nav:
@@ -252,6 +275,10 @@ ru:
         description: "Описание (необязательно)"
         create: "Создать"
         save: "Сохранить"
+      flash:
+        created: "Устройство создано. API токен: %{token}"
+        updated: "Устройство обновлено."
+        destroyed: "Устройство удалено."
     device_groups:
       index:
         title: "Группы устройств"
@@ -280,6 +307,12 @@ ru:
         description: "Описание"
         create: "Создать"
         save: "Сохранить"
+      flash:
+        created: "Группа создана."
+        updated: "Группа обновлена."
+        destroyed: "Группа удалена."
+        devices_added: "Устройства добавлены."
+        device_removed: "Устройство удалено из группы."
     time_slots:
       index:
         back: "← Назад"
@@ -291,6 +324,10 @@ ru:
         price: "Начальная цена"
         empty: "Нет слотов на %{date}."
         empty_hint: "Нажмите «Генерировать слоты» для создания расписания."
+      flash:
+        slots_already_exist: "Слоты на %{date} уже созданы."
+        generated: "Создано 48 слотов на %{date}."
+        price_updated: "Цена обновлена."
     users:
       index:
         title: "Пользователи"
@@ -304,3 +341,10 @@ ru:
         change_role: "Изменить роль"
         total: "Всего"
         you: "вы"
+      flash:
+        cannot_change_own_role: "Нельзя изменить собственную роль."
+        invalid_role: "Недопустимая роль: «%{role}»."
+        role_updated: "Роль пользователя «%{name}» изменена на «%{role}»."
+      roles:
+        user: "Пользователь"
+        admin: "Администратор"

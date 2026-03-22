@@ -24,7 +24,7 @@ class PlaylistsController < ApplicationController
     authorize @playlist
 
     if @playlist.save
-      redirect_to @playlist, notice: "Плейлист создан."
+      redirect_to @playlist, notice: t("playlists.flash.created")
     else
       render :new, status: :unprocessable_content
     end
@@ -38,7 +38,7 @@ class PlaylistsController < ApplicationController
     authorize @playlist
 
     if @playlist.update(playlist_params)
-      redirect_to @playlist, notice: "Плейлист обновлён."
+      redirect_to @playlist, notice: t("playlists.flash.updated")
     else
       render :edit, status: :unprocessable_content
     end
@@ -47,7 +47,7 @@ class PlaylistsController < ApplicationController
   def destroy
     authorize @playlist
     @playlist.destroy!
-    redirect_to playlists_path, notice: "Плейлист удалён."
+    redirect_to playlists_path, notice: t("playlists.flash.destroyed")
   end
 
   def reorder
@@ -64,7 +64,7 @@ class PlaylistsController < ApplicationController
     end
     @playlist.recalculate_total_duration!
 
-    redirect_to @playlist, notice: "Порядок обновлён."
+    redirect_to @playlist, notice: t("playlists.flash.reordered")
   end
 
   private

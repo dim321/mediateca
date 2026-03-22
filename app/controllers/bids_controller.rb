@@ -12,7 +12,8 @@ class BidsController < ApplicationController
     ).call
 
     if result.success?
-      redirect_to auction_path(@auction), notice: "Ставка принята: #{result.bid.amount} руб."
+      redirect_to auction_path(@auction),
+                  notice: t("bids.flash.accepted", amount: helpers.number_to_currency(result.bid.amount, unit: "₽", format: "%n %u"))
     else
       redirect_to auction_path(@auction), alert: result.error
     end

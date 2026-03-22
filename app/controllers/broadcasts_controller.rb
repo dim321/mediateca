@@ -24,7 +24,7 @@ class BroadcastsController < ApplicationController
     ).call
 
     if result.success?
-      redirect_to broadcasts_path, notice: "Трансляция запланирована."
+      redirect_to broadcasts_path, notice: t("broadcasts.flash.scheduled")
     else
       flash[:alert] = result.error
       redirect_to schedule_device_path(time_slot.broadcast_device)
