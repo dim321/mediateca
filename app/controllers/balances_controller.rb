@@ -18,7 +18,8 @@ class BalancesController < ApplicationController
     ).call
 
     if result.success?
-      redirect_to balance_path, notice: "Баланс пополнен на #{result.transaction.amount} руб."
+      redirect_to balance_path,
+                  notice: t("balances.flash.deposited", amount: helpers.number_to_currency(result.transaction.amount, unit: "₽", format: "%n %u"))
     else
       flash[:alert] = result.error
       redirect_to balance_path

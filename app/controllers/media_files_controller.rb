@@ -22,7 +22,7 @@ class MediaFilesController < ApplicationController
     ).call
 
     if result.success?
-      redirect_to media_file_path(result.media_file), notice: "Файл успешно загружен и отправлен на обработку."
+      redirect_to media_file_path(result.media_file), notice: t("media_files.flash.upload_queued")
     else
       flash.now[:alert] = result.error
       @media_files = policy_scope(MediaFile).recent
@@ -34,10 +34,10 @@ class MediaFilesController < ApplicationController
     authorize @media_file
 
     if @media_file.playlist_items.any?
-      redirect_to media_files_path, alert: "Невозможно удалить файл, используемый в плейлисте."
+      redirect_to media_files_path, alert: t("media_files.flash.destroy_blocked")
     else
       @media_file.destroy!
-      redirect_to media_files_path, notice: "Файл удалён."
+      redirect_to media_files_path, notice: t("media_files.flash.destroyed")
     end
   end
 

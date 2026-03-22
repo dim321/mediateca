@@ -41,20 +41,26 @@ class MediaFile < ApplicationRecord
     ActiveSupport::NumberHelper.number_to_human_size(file_size)
   end
 
-  # Транслирует обновление статуса для Turbo Stream
+  # Имя Turbo Stream (канал Action Cable), общее для всех live-обновлений страницы файла.
+  # Не путать с id turbo-frame: target задаёт DOM-id конкретного фрейма.
+  def broadcast_stream_name
+    "media_file_#{id}"
+  end
+
+  # Транслирует обновление статуса (update = только содержимое turbo-frame в show)
   def broadcast_status_update
-    broadcast_replace_to(
-      "media_file_#{id}_status",
+    broadcast_update_to(
+      broadcast_stream_name,
       target: "media_file_#{id}_status",
       partial: "media_files/processing_status",
       locals: { media_file: self }
     )
   end
 
-  # Транслирует обновление длительности (update = только содержимое turbo-frame, как в родительской вьюхе)
+  # Транслирует обновление длительности (тот же stream, другой target)
   def broadcast_duration_update
     broadcast_update_to(
-      "media_file_#{id}_status",
+      broadcast_stream_name,
       target: "media_file_#{id}_duration",
       partial: "media_files/duration",
       locals: { media_file: self }

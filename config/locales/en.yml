@@ -69,6 +69,16 @@ en:
       processing_status: "Processing status"
       audio: "Audio"
       video: "Video"
+    flash:
+      upload_queued: "File uploaded successfully and queued for processing."
+      destroy_blocked: "Cannot delete a file that is used in a playlist."
+      destroyed: "File deleted."
+
+  playlist_items:
+    flash:
+      added: "File added to playlist."
+      position_updated: "Order updated."
+      removed: "File removed from playlist."
 
   processing_status:
     ready: "Ready"
@@ -113,6 +123,11 @@ en:
     playlist_card:
       tracks: "tracks"
       duration: "Duration"
+    flash:
+      created: "Playlist created."
+      updated: "Playlist updated."
+      destroyed: "Playlist deleted."
+      reordered: "Order updated."
 
   devices:
     index:
@@ -163,6 +178,12 @@ en:
       playing: "Playing"
       completed: "Completed"
       failed: "Failed"
+    flash:
+      scheduled: "Broadcast scheduled."
+
+  bids:
+    flash:
+      accepted: "Bid accepted: %{amount}."
 
   auctions:
     status:
@@ -208,6 +229,8 @@ en:
       deposit_type: "Deposit"
       withdrawal_type: "Withdrawal"
       empty: "No transactions."
+    flash:
+      deposited: "Balance topped up by %{amount}."
 
   admin:
     nav:
@@ -252,6 +275,10 @@ en:
         description: "Description (optional)"
         create: "Create"
         save: "Save"
+      flash:
+        created: "Device created. API token: %{token}"
+        updated: "Device updated."
+        destroyed: "Device deleted."
     device_groups:
       index:
         title: "Device groups"
@@ -280,6 +307,12 @@ en:
         description: "Description"
         create: "Create"
         save: "Save"
+      flash:
+        created: "Group created."
+        updated: "Group updated."
+        destroyed: "Group deleted."
+        devices_added: "Devices added."
+        device_removed: "Device removed from group."
     time_slots:
       index:
         back: "Back"
@@ -291,6 +324,10 @@ en:
         price: "Initial price"
         empty: "No slots on %{date}."
         empty_hint: "Click «Generate slots» to create schedule."
+      flash:
+        slots_already_exist: "Slots for %{date} already exist."
+        generated: "Created 48 slots for %{date}."
+        price_updated: "Price updated."
     users:
       index:
         title: "Users"
@@ -304,3 +341,10 @@ en:
         change_role: "Change role"
         total: "Total"
         you: "you"
+      flash:
+        cannot_change_own_role: "You cannot change your own role."
+        invalid_role: "Invalid role: \"%{role}\"."
+        role_updated: "Role for %{name} changed to %{role}."
+      roles:
+        user: "User"
+        admin: "Administrator"

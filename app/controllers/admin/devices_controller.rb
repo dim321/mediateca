@@ -22,7 +22,8 @@ module Admin
       @device = BroadcastDevice.new(device_params)
 
       if @device.save
-        redirect_to admin_device_path(@device), notice: "Устройство создано. API токен: #{@device.api_token}"
+        redirect_to admin_device_path(@device),
+                    notice: t("admin.devices.flash.created", token: @device.api_token)
       else
         render :new, status: :unprocessable_content
       end
@@ -33,7 +34,7 @@ module Admin
 
     def update
       if @device.update(device_params)
-        redirect_to admin_device_path(@device), notice: "Устройство обновлено."
+        redirect_to admin_device_path(@device), notice: t("admin.devices.flash.updated")
       else
         render :edit, status: :unprocessable_content
       end
@@ -41,7 +42,7 @@ module Admin
 
     def destroy
       @device.destroy!
-      redirect_to admin_devices_path, notice: "Устройство удалено."
+      redirect_to admin_devices_path, notice: t("admin.devices.flash.destroyed")
     end
 
     private
