@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# Kamal runs this after secrets from .kamal/secrets are merged into the hook environment
+# (Ruby dotenv — bash parameter expansions like ${VAR:?msg} in secrets files are not evaluated).
+set -euo pipefail
+
+if [[ -z "${YC_ACCESS_KEY_ID:-}" || -z "${YC_SECRET_ACCESS_KEY:-}" ]]; then
+  echo "ERROR: YC_ACCESS_KEY_ID and YC_SECRET_ACCESS_KEY must be set to non-empty values (Yandex Object Storage for Active Storage)." >&2
+  echo "Unset values would be deployed and uploads would fail at runtime. See .env.deploy.example." >&2
+  exit 1
+fi

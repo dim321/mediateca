@@ -29,11 +29,15 @@ registry:
   password:
     - KAMAL_REGISTRY_PASSWORD
 
-# Inject ENV variables into containers (secrets come from .kamal/secrets).
+# Inject ENV variables into containers (secrets come from .kamal/secrets via Dotenv — not shell).
+# Required before `kamal deploy`: YC_ACCESS_KEY_ID and YC_SECRET_ACCESS_KEY must be set in the environment so .kamal/secrets can substitute them; `.kamal/hooks/pre-deploy` fails if they are empty (--skip-hooks disables this).
+# See .env.deploy.example.
 env:
   secret:
     - RAILS_MASTER_KEY
     - MEDIATECA_DATABASE_PASSWORD
+    - YC_ACCESS_KEY_ID
+    - YC_SECRET_ACCESS_KEY
   clear:
     SOLID_QUEUE_IN_PUMA: true
     # DB_HOST: hostname of the db accessory on the same server (mediateca-db)
@@ -49,7 +53,7 @@ aliases:
   logs: app logs -f
   dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
 
-# Use a persistent storage volume for sqlite database files and local Active Storage files.
+# Persistent volume (e.g. tmp, local fallbacks). Active Storage files use Yandex Object Storage (:yandex).
 # Recommended to change this to a mounted volume path that is backed up off server.
 volumes:
   - "mediateca_storage:/rails/storage"
