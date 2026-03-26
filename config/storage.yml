@@ -16,6 +16,18 @@ minio:
   endpoint: <%= ENV.fetch("MINIO_ENDPOINT", "http://localhost:9000") %>
   force_path_style: true
 
+# Yandex Object Storage (S3-compatible) — production Active Storage (:yandex in production.rb).
+# Production: set YC_ACCESS_KEY_ID and YC_SECRET_ACCESS_KEY in the container (Kamal secrets / .env.deploy.example).
+# Other environments often use :local/:test; defaults below only allow YAML to load when those env vars are absent.
+yandex:
+  service: S3
+  access_key_id: <%= ENV.fetch("YC_ACCESS_KEY_ID", "unset") %>
+  secret_access_key: <%= ENV.fetch("YC_SECRET_ACCESS_KEY", "unset") %>
+  region: <%= ENV.fetch("YC_REGION", "ru-central1") %>
+  bucket: <%= ENV.fetch("YC_BUCKET", "mediateca-prod") %>
+  endpoint: <%= ENV.fetch("YC_S3_ENDPOINT", "https://storage.yandexcloud.net") %>
+  force_path_style: true
+
 # AWS S3 for production
 # amazon:
 #   service: S3

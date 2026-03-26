@@ -64,3 +64,5 @@ node_modules/
 .cursor/*
 
 .minimax-m2.5
+opencode.json
+
