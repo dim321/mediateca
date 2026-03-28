@@ -6,9 +6,9 @@ Goal: prepare the project for payment integration without changing domain logic.
 
 Files:
 
-- `/home/dim/Projects/MyPets/mediateca/Gemfile`
-- `/home/dim/Projects/MyPets/mediateca/config/initializers/stripe.rb`
-- `/home/dim/Projects/MyPets/mediateca/config/initializers/yookassa.rb`
+- `Gemfile`
+- `config/initializers/stripe.rb`
+- `config/initializers/yookassa.rb`
 - deployment or README docs if needed
 
 Tasks:
@@ -37,8 +37,8 @@ Goal: add new entities without breaking old code.
 
 Files:
 
-- new migrations in `/home/dim/Projects/MyPets/mediateca/db/migrate`
-- `/home/dim/Projects/MyPets/mediateca/db/schema.rb`
+- new migrations in `db/migrate`
+- `db/schema.rb`
 
 Tasks:
 
@@ -69,11 +69,11 @@ Goal: introduce the new domain layer without switching business logic yet.
 
 Files:
 
-- `/home/dim/Projects/MyPets/mediateca/app/models/financial_account.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/models/ledger_entry.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/models/payment.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/models/payment_webhook_event.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/models/user.rb`
+- `app/models/financial_account.rb`
+- `app/models/ledger_entry.rb`
+- `app/models/payment.rb`
+- `app/models/payment_webhook_event.rb`
+- `app/models/user.rb`
 
 Tasks:
 
@@ -105,11 +105,11 @@ Goal: make safe balance mutations on the new layer.
 
 Files:
 
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/account_credit.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/account_hold.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/account_release.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/account_capture.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/account_balance_check.rb`
+- `app/services/billing/account_credit.rb`
+- `app/services/billing/account_hold.rb`
+- `app/services/billing/account_release.rb`
+- `app/services/billing/account_capture.rb`
+- `app/services/billing/account_balance_check.rb`
 
 Tasks:
 
@@ -141,10 +141,10 @@ Goal: move the UI to the new source of truth while keeping top-up disabled or tr
 
 Files:
 
-- `/home/dim/Projects/MyPets/mediateca/app/controllers/balances_controller.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/views/balances/show.html.slim`
-- `/home/dim/Projects/MyPets/mediateca/app/views/layouts/application.html.slim`
-- `/home/dim/Projects/MyPets/mediateca/spec/requests/balances_spec.rb`
+- `app/controllers/balances_controller.rb`
+- `app/views/balances/show.html.slim`
+- `app/views/layouts/application.html.slim`
+- `spec/requests/balances_spec.rb`
 
 Tasks:
 
@@ -171,13 +171,13 @@ Goal: create Stripe or YooKassa payments, but do not settle funds yet.
 
 Files:
 
-- `/home/dim/Projects/MyPets/mediateca/app/services/payments/gateway/base.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/payments/gateway/stripe_strategy.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/payments/gateway/yookassa_strategy.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/payments/gateway_resolver.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/payments/create_top_up.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/controllers/top_ups_controller.rb`
-- `/home/dim/Projects/MyPets/mediateca/config/routes.rb`
+- `app/services/payments/gateway/base.rb`
+- `app/services/payments/gateway/stripe_strategy.rb`
+- `app/services/payments/gateway/yookassa_strategy.rb`
+- `app/services/payments/gateway_resolver.rb`
+- `app/services/payments/create_top_up.rb`
+- `app/controllers/top_ups_controller.rb`
+- `config/routes.rb`
 
 Tasks:
 
@@ -209,12 +209,12 @@ Goal: safely confirm payments and credit funds.
 
 Files:
 
-- `/home/dim/Projects/MyPets/mediateca/app/controllers/webhooks/stripe_controller.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/controllers/webhooks/yookassa_controller.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/jobs/process_payment_webhook_job.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/payments/process_webhook_event.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/payments/finalize_top_up.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/payments/fail_payment.rb`
+- `app/controllers/webhooks/stripe_controller.rb`
+- `app/controllers/webhooks/yookassa_controller.rb`
+- `app/jobs/process_payment_webhook_job.rb`
+- `app/services/payments/process_webhook_event.rb`
+- `app/services/payments/finalize_top_up.rb`
+- `app/services/payments/fail_payment.rb`
 
 Tasks:
 
@@ -247,15 +247,17 @@ Goal: cover operational gaps between PSP state and local DB state.
 
 Files:
 
-- `/home/dim/Projects/MyPets/mediateca/app/jobs/reconcile_pending_payments_job.rb`
-- `/home/dim/Projects/MyPets/mediateca/config/recurring.yml`
+- `app/jobs/reconcile_pending_payments_job.rb`
+- `config/recurring.yml`
 
 Tasks:
 
-- periodically scan `pending` and `processing` payments
-- fetch latest PSP status
+- periodically scan `pending` and `processing` payments in bounded batches, starting with a default batch size such as 100 records per run
+- only reconcile records older than a safety window such as 5 to 10 minutes, and run the job on a fixed cadence such as every 5 minutes
+- fetch latest PSP status with explicit rate limits, a global concurrency cap, and idempotent re-check behavior
+- use bounded retries with exponential backoff and jitter, cap the retry count, and pause reconciliation via a circuit breaker when PSP failures cross a defined threshold
 - log or mark mismatches for operator review
-- add useful scopes for support or admin use
+- add useful scopes for support or admin use, including targeted runs by payment id, provider account or merchant identifier, and time range
 
 Tests:
 
@@ -276,10 +278,10 @@ Goal: eliminate overspending across parallel bids.
 
 Files:
 
-- `/home/dim/Projects/MyPets/mediateca/app/services/auctions/bid_service.rb`
-- optional helper services under `/home/dim/Projects/MyPets/mediateca/app/services/auctions`
-- `/home/dim/Projects/MyPets/mediateca/spec/services/auctions/bid_service_spec.rb`
-- `/home/dim/Projects/MyPets/mediateca/spec/requests/bids_spec.rb`
+- `app/services/auctions/bid_service.rb`
+- optional helper services under `app/services/auctions`
+- `spec/services/auctions/bid_service_spec.rb`
+- `spec/requests/bids_spec.rb`
 
 Tasks:
 
@@ -310,9 +312,9 @@ Goal: finalize auction money flow correctly.
 
 Files:
 
-- `/home/dim/Projects/MyPets/mediateca/app/services/auctions/close_auction_service.rb`
+- `app/services/auctions/close_auction_service.rb`
 - optional capture helper services
-- `/home/dim/Projects/MyPets/mediateca/spec/services/auctions/close_auction_service_spec.rb`
+- `spec/services/auctions/close_auction_service_spec.rb`
 
 Tasks:
 
@@ -342,11 +344,11 @@ Goal: remove the old financial layer and ambiguous naming.
 
 Files:
 
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/deposit_service.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/deduction_service.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/balance_check_service.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/models/transaction.rb`
-- `/home/dim/Projects/MyPets/mediateca/spec/factories/transactions.rb`
+- `app/services/billing/deposit_service.rb`
+- `app/services/billing/deduction_service.rb`
+- `app/services/billing/balance_check_service.rb`
+- `app/models/transaction.rb`
+- `spec/factories/transactions.rb`
 
 Tasks:
 
@@ -373,9 +375,9 @@ Goal: complete the migration and remove the legacy source of truth.
 
 Files:
 
-- cleanup migration in `/home/dim/Projects/MyPets/mediateca/db/migrate`
-- `/home/dim/Projects/MyPets/mediateca/app/models/user.rb`
-- `/home/dim/Projects/MyPets/mediateca/db/seeds.rb`
+- cleanup migration in `db/migrate`
+- `app/models/user.rb`
+- `db/seeds.rb`
 - remaining specs and views
 
 Tasks:
@@ -403,11 +405,11 @@ Dependencies:
 
 - PR 1 through PR 8 for top-up support
 - PR 9 and PR 10 are mandatory if auctions rely on user funds
-- PR 11 and PR 12 can follow after stabilization, but should not be deferred too long
+- PR 11 and PR 12 can follow stabilization, but should not be deferred too long
 
 ## Critical checkpoints
 
 - After PR 4, the new wallet layer must be fully covered with isolated tests.
-- After PR 7, top-up must work end to end with webhook-confirmed crediting.
+- After PR 7, top-up must work end-to-end with webhook-confirmed crediting.
 - After PR 10, auctions must no longer depend on `user.balance`.
 - After PR 12, the system must have a single source of truth for money.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_28_093400) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_28_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -131,7 +131,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_093400) do
     t.string "reference_type"
     t.datetime "updated_at", null: false
     t.index ["financial_account_id", "created_at"], name: "index_ledger_entries_on_financial_account_id_and_created_at"
-    t.index ["financial_account_id"], name: "index_ledger_entries_on_financial_account_id"
     t.index ["idempotency_key"], name: "index_ledger_entries_on_idempotency_key"
     t.index ["payment_id"], name: "index_ledger_entries_on_payment_id"
     t.index ["reference_type", "reference_id"], name: "index_ledger_entries_on_reference_type_and_reference_id"
@@ -163,6 +162,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_093400) do
     t.datetime "processed_at"
     t.integer "provider", null: false
     t.datetime "updated_at", null: false
+    t.index ["processed_at"], name: "index_payment_webhook_events_unprocessed", where: "(processed_at IS NULL)"
     t.index ["provider", "event_id"], name: "index_payment_webhook_events_on_provider_and_event_id", unique: true
   end
 

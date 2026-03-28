@@ -23,7 +23,7 @@ Balance recommendation:
 
 ### 1. Base dependencies and configuration
 
-Update `/home/dim/Projects/MyPets/mediateca/Gemfile`
+Update `Gemfile`
 
 - Add `stripe`
 - Add an HTTP client for YooKassa, either `faraday` or `httpx`
@@ -31,8 +31,8 @@ Update `/home/dim/Projects/MyPets/mediateca/Gemfile`
 
 Add initializers:
 
-- `/home/dim/Projects/MyPets/mediateca/config/initializers/stripe.rb`
-- `/home/dim/Projects/MyPets/mediateca/config/initializers/yookassa.rb`
+- `config/initializers/stripe.rb`
+- `config/initializers/yookassa.rb`
 
 Add credentials or env keys:
 
@@ -102,11 +102,19 @@ Add data migration:
 
 - create `FinancialAccount` for all users
 - copy `users.balance` into `financial_accounts.available_amount_cents`
+- treat `users.balance` as a decimal major-unit amount, because the current schema stores it as `decimal(12,2)`, not cents
+- convert with `ROUND(users.balance * 100)` into integer cents
+- treat fractions of a cent with a deterministic round-half-up rule; in practice, the current `users.balance` column already limits values to 2 decimal places, so the backfill only needs to convert stored 2-decimal values into cents
+- keep `financial_accounts.currency = "RUB"` as the unit metadata for migrated balances
+- rely on `users.balance NOT NULL` and the `positive_balance` check constraint to block null and negative legacy values before the backfill runs
+- do not add an "already in cents" branch for this migration, because `users.balance` is not a cents column in the current codebase
 
 Add a later cleanup migration:
 
-- remove `users.balance`
-- remove check constraint `positive_balance`
+- keep `users.balance` and the `positive_balance` check constraint until `financial_accounts` has equivalent non-negative integrity checks, all application writes have moved to `financial_accounts`, and consistency checks between `users.balance` and `financial_accounts.available_amount_cents` pass
+- backfill all rows, validate the totals, and verify via tests and rollout checks that reads and writes now target `financial_accounts`
+- only then remove `users.balance`
+- after removing `users.balance`, drop `positive_balance` if it still exists independently; if PostgreSQL removes it automatically as part of dropping the column, document that explicitly in the cleanup migration
 
 Resolve current `transactions` table separately:
 
@@ -115,7 +123,7 @@ Resolve current `transactions` table separately:
 
 ### 3. New models
 
-Add `/home/dim/Projects/MyPets/mediateca/app/models/financial_account.rb`
+Add `app/models/financial_account.rb`
 
 - `belongs_to :user`
 - `has_many :ledger_entries`
@@ -123,88 +131,88 @@ Add `/home/dim/Projects/MyPets/mediateca/app/models/financial_account.rb`
 - methods `available_amount`, `held_amount`, `total_amount`
 - use row locking with `with_lock`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/models/ledger_entry.rb`
+Add `app/models/ledger_entry.rb`
 
 - append-only, disallow update and destroy
 - enum `entry_type`: `deposit_settled`, `hold`, `release`, `capture`, `refund`, `adjustment`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/models/payment.rb`
+Add `app/models/payment.rb`
 
 - enum `provider`: `stripe`, `yookassa`
 - enum `operation_type`: `top_up`, `refund`
 - enum `status`: `pending`, `requires_action`, `processing`, `succeeded`, `failed`, `canceled`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/models/payment_webhook_event.rb`
+Add `app/models/payment_webhook_event.rb`
 
-Update `/home/dim/Projects/MyPets/mediateca/app/models/user.rb`
+Update `app/models/user.rb`
 
 - add `has_one :financial_account`
 - add `has_many :payments`
 - remove domain logic that depends on the `balance` field and move it into `financial_account`
 - optionally keep a temporary `balance` proxy method to `financial_account.available_amount_cents` for a smooth migration
 
-Mark `/home/dim/Projects/MyPets/mediateca/app/models/transaction.rb` as legacy and phase it out, then remove it later.
+Mark `app/models/transaction.rb` as legacy and phase it out, then remove it later.
 
 ### 4. Payments layer and Strategy pattern
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/payments/gateway/base.rb`
+Add `app/services/payments/gateway/base.rb`
 
 - contract methods: `create_top_up(payment:)`, `parse_webhook(request:)`, `verify_webhook!(request:)`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/payments/gateway/stripe_strategy.rb`
+Add `app/services/payments/gateway/stripe_strategy.rb`
 
 - create Stripe Checkout Session
 - include metadata: `payment_id`, `user_id`
 - use idempotency key on create
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/payments/gateway/yookassa_strategy.rb`
+Add `app/services/payments/gateway/yookassa_strategy.rb`
 
 - create YooKassa `payment` with redirect confirmation
 - require `Idempotence-Key`
 - keep internal `payment_id` in metadata or description
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/payments/gateway_resolver.rb`
+Add `app/services/payments/gateway_resolver.rb`
 
 - selects strategy by `provider`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/payments/create_top_up.rb`
+Add `app/services/payments/create_top_up.rb`
 
 - creates local `Payment`
 - calls the strategy
 - stores `provider_payment_id` and `confirmation_url`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/payments/finalize_top_up.rb`
+Add `app/services/payments/finalize_top_up.rb`
 
 - called only from webhook or job
 - idempotently marks `Payment` as `succeeded`
 - creates `LedgerEntry`
 - increments `financial_account.available_amount_cents`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/payments/fail_payment.rb`
+Add `app/services/payments/fail_payment.rb`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/payments/process_webhook_event.rb`
+Add `app/services/payments/process_webhook_event.rb`
 
 ### 5. Internal wallet and ledger layer
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/billing/account_credit.rb`
+Add `app/services/billing/account_credit.rb`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/billing/account_hold.rb`
+Add `app/services/billing/account_hold.rb`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/billing/account_release.rb`
+Add `app/services/billing/account_release.rb`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/billing/account_capture.rb`
+Add `app/services/billing/account_capture.rb`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/services/billing/account_balance_check.rb`
+Add `app/services/billing/account_balance_check.rb`
 
 Current services:
 
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/deposit_service.rb` should be replaced with a thin wrapper over `Payments::CreateTopUp` or removed
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/deduction_service.rb` should be replaced by `AccountCapture`
-- `/home/dim/Projects/MyPets/mediateca/app/services/billing/balance_check_service.rb` should be rewritten to use `FinancialAccount`
+- Replace `app/services/billing/deposit_service.rb` with a thin wrapper over `Payments::CreateTopUp`, or remove it.
+- `app/services/billing/deduction_service.rb` should be replaced by `AccountCapture`
+- `app/services/billing/balance_check_service.rb` should be rewritten to use `FinancialAccount`
 
 ### 6. Controllers and routes
 
-Update `/home/dim/Projects/MyPets/mediateca/config/routes.rb`
+Update `config/routes.rb`
 
 - replace `post :deposit` with:
   - `post :top_ups`
@@ -214,24 +222,24 @@ Update `/home/dim/Projects/MyPets/mediateca/config/routes.rb`
   - `post "/webhooks/stripe", to: "webhooks/stripe#create"`
   - `post "/webhooks/yookassa", to: "webhooks/yookassa#create"`
 
-Update `/home/dim/Projects/MyPets/mediateca/app/controllers/balances_controller.rb`
+Update `app/controllers/balances_controller.rb`
 
 - `show` reads balance and history from `financial_account`
 - remove `deposit`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/controllers/top_ups_controller.rb`
+Add `app/controllers/top_ups_controller.rb`
 
 - accepts amount and provider
 - creates local `Payment`
 - redirects to `confirmation_url`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/controllers/webhooks/stripe_controller.rb`
+Add `app/controllers/webhooks/stripe_controller.rb`
 
 - verify `Stripe-Signature`
 - return `200` quickly
 - enqueue job
 
-Add `/home/dim/Projects/MyPets/mediateca/app/controllers/webhooks/yookassa_controller.rb`
+Add `app/controllers/webhooks/yookassa_controller.rb`
 
 - accept notification
 - persist `PaymentWebhookEvent`
@@ -239,26 +247,26 @@ Add `/home/dim/Projects/MyPets/mediateca/app/controllers/webhooks/yookassa_contr
 
 ### 7. Jobs
 
-Add `/home/dim/Projects/MyPets/mediateca/app/jobs/process_payment_webhook_job.rb`
+Add `app/jobs/process_payment_webhook_job.rb`
 
 - loads `PaymentWebhookEvent`
 - calls `Payments::ProcessWebhookEvent`
 
-Add `/home/dim/Projects/MyPets/mediateca/app/jobs/reconcile_pending_payments_job.rb`
+Add `app/jobs/reconcile_pending_payments_job.rb`
 
 - periodically checks stuck `pending` and `processing` payments
 - fetches latest status from Stripe or YooKassa
 
 ### 8. Auctions
 
-Update `/home/dim/Projects/MyPets/mediateca/app/services/auctions/bid_service.rb`
+Update `app/services/auctions/bid_service.rb`
 
 - remove checks against `user.balance`
 - check `financial_account.available_amount_cents`
 - when a user becomes highest bidder, create a hold for the bid amount or the delta
 - when outbid, release the previous highest bidder hold
 
-Update `/home/dim/Projects/MyPets/mediateca/app/services/auctions/close_auction_service.rb`
+Update `app/services/auctions/close_auction_service.rb`
 
 - stop direct deductions
 - call `AccountCapture`
@@ -266,136 +274,136 @@ Update `/home/dim/Projects/MyPets/mediateca/app/services/auctions/close_auction_
 
 Optional support services:
 
-- `/home/dim/Projects/MyPets/mediateca/app/services/auctions/release_outbid_hold.rb`
-- `/home/dim/Projects/MyPets/mediateca/app/services/auctions/capture_winner_hold.rb`
+- `app/services/auctions/release_outbid_hold.rb`
+- `app/services/auctions/capture_winner_hold.rb`
 
 ### 9. UI
 
-Update `/home/dim/Projects/MyPets/mediateca/app/views/balances/show.html.slim`
+Update `app/views/balances/show.html.slim`
 
 - add payment provider selection: `stripe` or `yookassa`
 - the top-up form should create a top-up request, not instantly credit the balance
 - history should be loaded from `ledger_entries`
 - show external payment statuses separately
 
-Update `/home/dim/Projects/MyPets/mediateca/app/views/layouts/application.html.slim`
+Update `app/views/layouts/application.html.slim`
 
 - render `current_user.financial_account.available_amount`
 
-Update `/home/dim/Projects/MyPets/mediateca/app/views/auctions/show.html.slim`
+Update `app/views/auctions/show.html.slim`
 
 - display available balance and optionally held amount
 
 ### 10. Seeds and factories
 
-Update `/home/dim/Projects/MyPets/mediateca/db/seeds.rb`
+Update `db/seeds.rb`
 
 - create `financial_account` instead of assigning `user.balance`
 
 Update or add factories:
 
-- `/home/dim/Projects/MyPets/mediateca/spec/factories/users.rb`
+- `spec/factories/users.rb`
 - `financial_account`
 - `ledger_entry`
 - `payment`
 - `payment_webhook_event`
 
-Move `/home/dim/Projects/MyPets/mediateca/spec/factories/transactions.rb` to legacy usage or remove it after migration.
+Move `spec/factories/transactions.rb` to legacy usage or remove it after migration.
 
 ## Required Tests
 
 ### 1. Models
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/models/financial_account_spec.rb`
+Add `spec/models/financial_account_spec.rb`
 
 - validations
 - unique account per user
 - non-negative amounts
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/models/ledger_entry_spec.rb`
+Add `spec/models/ledger_entry_spec.rb`
 
 - append-only behavior
 - enum values
 - correct money signs and persisted state
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/models/payment_spec.rb`
+Add `spec/models/payment_spec.rb`
 
 - statuses
 - providers
 - idempotency key uniqueness behavior
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/models/payment_webhook_event_spec.rb`
+Add `spec/models/payment_webhook_event_spec.rb`
 
 - deduplication on `provider + event_id`
 
-Update `/home/dim/Projects/MyPets/mediateca/spec/models/user_spec.rb`
+Update `spec/models/user_spec.rb`
 
 - add `has_one :financial_account`
 - remove tests that depend on `balance`
 
 ### 2. Billing services
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/services/billing/account_credit_spec.rb`
+Add `spec/services/billing/account_credit_spec.rb`
 
 - credits increase `available_amount_cents`
 - creates ledger entry
 - idempotent by key
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/services/billing/account_hold_spec.rb`
+Add `spec/services/billing/account_hold_spec.rb`
 
 - hold decreases available and increases held
 - insufficient funds failure
 - race-condition safety with account locking
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/services/billing/account_release_spec.rb`
+Add `spec/services/billing/account_release_spec.rb`
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/services/billing/account_capture_spec.rb`
+Add `spec/services/billing/account_capture_spec.rb`
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/services/billing/account_balance_check_spec.rb`
+Add `spec/services/billing/account_balance_check_spec.rb`
 
 ### 3. Payment services
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/services/payments/create_top_up_spec.rb`
+Add `spec/services/payments/create_top_up_spec.rb`
 
 - creates `Payment`
 - calls the correct strategy
 - stores `confirmation_url`
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/services/payments/finalize_top_up_spec.rb`
+Add `spec/services/payments/finalize_top_up_spec.rb`
 
 - marks `Payment` as `succeeded`
 - credits the wallet exactly once
 - repeated webhook processing does not create duplicates
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/services/payments/process_webhook_event_spec.rb`
+Add `spec/services/payments/process_webhook_event_spec.rb`
 
 - Stripe `checkout.session.completed` or `payment_intent.succeeded`
 - YooKassa `payment.succeeded`
 - irrelevant events are ignored
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/services/payments/gateway/stripe_strategy_spec.rb`
+Add `spec/services/payments/gateway/stripe_strategy_spec.rb`
 
 - create payload contains metadata and idempotency handling
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/services/payments/gateway/yookassa_strategy_spec.rb`
+Add `spec/services/payments/gateway/yookassa_strategy_spec.rb`
 
 - create payload contains `Idempotence-Key`
 - correct `confirmation.return_url`
 
 ### 4. Webhooks and request specs
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/requests/webhooks/stripe_spec.rb`
+Add `spec/requests/webhooks/stripe_spec.rb`
 
 - valid signature
 - invalid signature returns `400`
 - duplicate event does not re-credit the account
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/requests/webhooks/yookassa_spec.rb`
+Add `spec/requests/webhooks/yookassa_spec.rb`
 
 - `payment.succeeded`
 - duplicate notification ignored
 
-Add `/home/dim/Projects/MyPets/mediateca/spec/requests/top_ups_spec.rb`
+Add `spec/requests/top_ups_spec.rb`
 
 - create Stripe top-up
 - create YooKassa top-up
@@ -403,25 +411,25 @@ Add `/home/dim/Projects/MyPets/mediateca/spec/requests/top_ups_spec.rb`
 
 ### 5. Auctions
 
-Update `/home/dim/Projects/MyPets/mediateca/spec/services/auctions/bid_service_spec.rb`
+Update `spec/services/auctions/bid_service_spec.rb`
 
 - bid creates hold
 - outbid releases old hold
 - insufficient available funds
 
-Update `/home/dim/Projects/MyPets/mediateca/spec/services/auctions/close_auction_service_spec.rb`
+Update `spec/services/auctions/close_auction_service_spec.rb`
 
 - winner hold captured
 - broadcast created only after successful capture
 - failed capture does not sell the slot
 
-Update `/home/dim/Projects/MyPets/mediateca/spec/requests/bids_spec.rb`
+Update `spec/requests/bids_spec.rb`
 
 - scenarios based on available funds instead of `user.balance`
 
 ### 6. Balance UI and request coverage
 
-Update `/home/dim/Projects/MyPets/mediateca/spec/requests/balances_spec.rb`
+Update `spec/requests/balances_spec.rb`
 
 - `GET /balance` renders data from `financial_account`
 - history shows `ledger_entries`
@@ -429,7 +437,7 @@ Update `/home/dim/Projects/MyPets/mediateca/spec/requests/balances_spec.rb`
 
 Add a system test:
 
-- `/home/dim/Projects/MyPets/mediateca/test/system/top_up_with_provider_selection_test.rb`
+- `test/system/top_up_with_provider_selection_test.rb`
 - user selects Stripe or YooKassa and is redirected into the payment flow
 
 ### 7. Migrations and data integrity

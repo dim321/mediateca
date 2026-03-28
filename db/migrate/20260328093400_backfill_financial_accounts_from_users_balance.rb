@@ -1,5 +1,10 @@
 class BackfillFinancialAccountsFromUsersBalance < ActiveRecord::Migration[8.1]
   def up
+    # Legacy users.balance is stored in major currency units as decimal(12,2).
+    # This backfill converts that value into integer cents with ROUND(balance * 100).
+    # Under the current schema, users.balance is NOT NULL and protected by the
+    # positive_balance check constraint, so null and negative legacy values are
+    # rejected before this migration runs.
     execute <<~SQL
       INSERT INTO financial_accounts (
         user_id,
