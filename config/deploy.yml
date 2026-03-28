@@ -38,6 +38,11 @@ env:
     - MEDIATECA_DATABASE_PASSWORD
     - YC_ACCESS_KEY_ID
     - YC_SECRET_ACCESS_KEY
+    - STRIPE_SECRET_KEY
+    - STRIPE_WEBHOOK_SECRET
+    - STRIPE_PUBLISHABLE_KEY
+    - YOOKASSA_SHOP_ID
+    - YOOKASSA_SECRET_KEY
   clear:
     SOLID_QUEUE_IN_PUMA: true
     # DB_HOST: hostname of the db accessory on the same server (mediateca-db)
