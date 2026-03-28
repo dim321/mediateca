@@ -17,15 +17,20 @@ RSpec.describe User, type: :model do
 
   describe "associations" do
     # Associations are tested once their target models exist (US1-US6)
-    it { is_expected.to have_many(:media_files).dependent(:destroy) } if defined?(MediaFile)
-    it { is_expected.to have_many(:playlists).dependent(:destroy) } if defined?(Playlist)
-    it { is_expected.to have_many(:bids).dependent(:restrict_with_error) } if defined?(Bid)
-    it { is_expected.to have_many(:transactions).dependent(:restrict_with_error) } if defined?(Transaction)
-    it { is_expected.to have_many(:scheduled_broadcasts).dependent(:restrict_with_error) } if defined?(ScheduledBroadcast)
+    it { is_expected.to have_one(:financial_account).dependent(:restrict_with_error) }
+    it { is_expected.to have_many(:media_files).dependent(:destroy) }
+    it { is_expected.to have_many(:playlists).dependent(:destroy) }
+    it { is_expected.to have_many(:bids).dependent(:restrict_with_error) }
+    it { is_expected.to have_many(:payments).dependent(:restrict_with_error) }
+    it { is_expected.to have_many(:transactions).dependent(:restrict_with_error) }
+    it { is_expected.to have_many(:scheduled_broadcasts).dependent(:restrict_with_error) }
 
     it "declares associations for future models" do
-      associations = User.reflect_on_all_associations(:has_many).map(&:name)
-      expect(associations).to include(:media_files, :playlists, :bids, :transactions, :scheduled_broadcasts)
+      has_many_associations = User.reflect_on_all_associations(:has_many).map(&:name)
+      has_one_associations = User.reflect_on_all_associations(:has_one).map(&:name)
+
+      expect(has_one_associations).to include(:financial_account)
+      expect(has_many_associations).to include(:media_files, :playlists, :bids, :payments, :transactions, :scheduled_broadcasts)
     end
   end
 
@@ -88,6 +93,33 @@ RSpec.describe User, type: :model do
     it "returns first and last name" do
       user = build(:user, first_name: "Ivan", last_name: "Petrov")
       expect(user.full_name).to eq("Ivan Petrov")
+    end
+  end
+
+  describe "#financial_account!" do
+    it "creates a financial account when missing" do
+      user = create(:user)
+
+      expect {
+        user.financial_account!
+      }.to change(FinancialAccount, :count).by(1)
+    end
+
+    it "returns the existing financial account" do
+      user = create(:user)
+      existing_account = create(:financial_account, user: user)
+
+      expect(user.financial_account!).to eq(existing_account)
+    end
+
+    it "returns the existing account when a creation race raises RecordNotUnique" do
+      user = create(:user)
+      existing_account = create(:financial_account, user: user)
+
+      allow(user).to receive(:financial_account).and_return(nil, existing_account)
+      allow(user).to receive(:create_financial_account!).with(currency: "RUB").and_raise(ActiveRecord::RecordNotUnique)
+
+      expect(user.financial_account!).to eq(existing_account)
     end
   end
 

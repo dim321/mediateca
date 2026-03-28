@@ -4,7 +4,7 @@
 |---|---|---|---|---|---|
 | 1 | [x] | Add payment dependencies and initializers | `Gemfile`, `config/initializers/*` | `bundle install` succeeds, app boots, Stripe and YooKassa config objects are available, missing credentials fail clearly | None |
 | 2 | [x] | Introduce financial schema | `db/migrate`, `db/schema.rb` | Tables `financial_accounts`, `ledger_entries`, `payments`, `payment_webhook_events` exist with indexes and constraints, backfill creates one account per user | 1 |
-| 3 | [ ] | Add financial domain models | `app/models/*` | `FinancialAccount`, `LedgerEntry`, `Payment`, `PaymentWebhookEvent` load correctly, enums and associations are covered by model specs | 2 |
+| 3 | [x] | Add financial domain models | `app/models/*` | `FinancialAccount`, `LedgerEntry`, `Payment`, `PaymentWebhookEvent` load correctly, enums and associations are covered by model specs | 2 |
 | 4 | [ ] | Build wallet mutation services | `app/services/billing/*` | Credit, hold, release, capture, and balance check work under row locks, ledger entries are append-only, concurrent overspend is prevented | 3 |
 | 5 | [ ] | Move balance page to new wallet | `BalancesController`, balance views, layout | Balance screen reads from `financial_account`, history uses `ledger_entries`, old instant deposit action is not exposed in UI | 4 |
 | 6 | [ ] | Add provider strategy layer | `app/services/payments/gateway/*`, resolver | Strategy contract exists, provider selection resolves correctly, external request payloads include metadata and idempotency keys | 5 |
@@ -24,9 +24,9 @@
 ## Suggested Execution Order
 
 1. Complete tasks 1 through 4 before changing any user-facing payment flow.
-2. Complete tasks 5 through 10 before enabling real top-ups in any environment.
-3. Complete tasks 12 through 15 before relying on wallet funds in auction settlement.
-4. Complete tasks 16 through 18 only after the new path is stable and fully green.
+2. Before enabling real top-ups in any environment, complete tasks 5 through 10.
+3. Do not rely on wallet funds in auction settlement until tasks 12 through 15 are complete.
+4. Only proceed with tasks 16 through 18 after the new path is stable and fully green.
 
 ## Mandatory Test Checklist
 
