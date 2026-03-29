@@ -55,9 +55,32 @@ MEDIATECA_DATABASE_PASSWORD=<надёжный пароль>
 
 # Пароль пользователя postgres в контейнере (можно совпадать с MEDIATECA_DATABASE_PASSWORD)
 POSTGRES_PASSWORD=$MEDIATECA_DATABASE_PASSWORD
+
+# Stripe
+STRIPE_SECRET_KEY=<секретный ключ Stripe>
+STRIPE_WEBHOOK_SECRET=<секрет подписи webhook Stripe>
+STRIPE_PUBLISHABLE_KEY=<публичный ключ Stripe>
+
+# YooKassa
+YOOKASSA_SHOP_ID=<shop id YooKassa>
+YOOKASSA_SECRET_KEY=<секретный ключ YooKassa>
 ```
 
 Убедитесь, что `config/master.key` есть локально (для `RAILS_MASTER_KEY`).
+
+Если вы предпочитаете Rails credentials вместо ENV, задайте те же значения в:
+
+```yaml
+stripe:
+  secret_key: ...
+  webhook_secret: ...
+  publishable_key: ...
+
+yookassa:
+  shop_id: ...
+  secret_key: ...
+  api_base_url: https://api.yookassa.ru/v3
+```
 
 ## 4. Подготовка сервера (первый раз)
 

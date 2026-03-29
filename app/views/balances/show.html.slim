@@ -5,19 +5,37 @@ div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8"
   div class="bg-white shadow rounded-lg p-6"
     dt class="text-sm font-medium text-gray-500" = t("balances.show.current")
     dd class="mt-2 text-3xl font-bold text-gray-900"
-      = number_to_currency(@balance, unit: "₽", format: "%n %u")
+      = format_money(@balance, currency: @financial_account.currency)
 
   div class="bg-white shadow rounded-lg p-6"
-    h3 class="text-sm font-medium text-gray-500 mb-3" = t("balances.show.deposit")
-    = form_with url: deposit_balance_path, method: :post, class: "flex items-end space-x-3" do |f|
-      div class="flex-1"
-        = f.label "deposit[amount]", t("balances.show.amount_label"), class: "block text-sm font-medium text-gray-700"
-        = f.number_field "deposit[amount]", min: 1, step: 0.01, placeholder: t("balances.show.amount_placeholder"), class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-3 py-2 border"
-      = f.submit t("balances.show.deposit_btn"), class: "inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 cursor-pointer"
+    dt class="text-sm font-medium text-gray-500" = t("balances.show.held")
+    dd class="mt-2 text-3xl font-bold text-gray-900"
+      = format_money(@held_balance, currency: @financial_account.currency)
+
+div class="bg-white shadow rounded-lg p-6 mb-8"
+  h2 class="text-lg font-semibold text-gray-900 mb-4" = t("balances.show.top_up_title")
+  p class="text-sm text-gray-500 mb-4" = t("balances.show.top_up_hint", currency: @financial_account.currency)
+  = form_with url: top_ups_path, scope: :top_up, method: :post, class: "grid grid-cols-1 md:grid-cols-3 gap-4 items-end" do |form|
+    div
+      = form.label :provider, t("balances.show.provider_label"), class: "block text-sm font-medium text-gray-700 mb-1"
+      = form.select :provider,
+                    [[t("balances.show.providers.stripe"), "stripe"], [t("balances.show.providers.yookassa"), "yookassa"]],
+                    {},
+                    class: "block w-full rounded-md border-gray-300 shadow-sm"
+    div
+      = form.label :amount, t("balances.show.amount_label", currency: @financial_account.currency), class: "block text-sm font-medium text-gray-700 mb-1"
+      = form.number_field :amount,
+                          step: "0.01",
+                          min: "0.01",
+                          required: true,
+                          placeholder: "100.00",
+                          class: "block w-full rounded-md border-gray-300 shadow-sm"
+    div
+      = form.submit t("balances.show.top_up_submit"), class: "inline-flex w-full justify-center rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
 
 h2 class="text-lg font-semibold text-gray-900 mb-4" = t("balances.show.history")
 
-- if @transactions.any?
+- if @ledger_entries.any?
   div class="bg-white shadow overflow-hidden rounded-lg"
     table class="min-w-full divide-y divide-gray-200"
       thead class="bg-gray-50"
@@ -27,16 +45,18 @@ h2 class="text-lg font-semibold text-gray-900 mb-4" = t("balances.show.history")
           th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase" = t("balances.show.type")
           th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase" = t("balances.show.amount")
       tbody class="bg-white divide-y divide-gray-200"
-        - @transactions.each do |txn|
+        - @ledger_entries.each do |entry|
+          - amount = entry.amount_cents.to_f / 100
+          - positive = amount.positive?
           tr
-            td class="px-6 py-4 text-sm text-gray-500" = txn.created_at.strftime('%d.%m.%Y %H:%M')
-            td class="px-6 py-4 text-sm text-gray-900" = txn.description
+            td class="px-6 py-4 text-sm text-gray-500" = entry.created_at.strftime('%d.%m.%Y %H:%M')
+            td class="px-6 py-4 text-sm text-gray-900" = entry.description
             td class="px-6 py-4"
-              span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{txn.deposit? ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}"
-                = txn.deposit? ? t("balances.show.deposit_type") : t("balances.show.withdrawal_type")
-            td class="px-6 py-4 text-sm text-right font-medium #{txn.amount.positive? ? 'text-green-600' : 'text-red-600'}"
-              = txn.amount.positive? ? "+" : ""
-              = number_to_currency(txn.amount, unit: "₽", format: "%n %u")
+              span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{positive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}"
+                = t("balances.show.entry_types.#{entry.entry_type}", default: entry.entry_type.humanize)
+            td class="px-6 py-4 text-sm text-right font-medium #{positive ? 'text-green-600' : 'text-red-600'}"
+              = positive ? "+" : ""
+              = format_money(amount, currency: entry.currency)
   div class="mt-4"
     == pagy_nav(@pagy) if @pagy&.pages.to_i > 1
 - else

@@ -40,8 +40,9 @@ div class="grid grid-cols-1 lg:grid-cols-3 gap-6"
       div class="bg-white shadow rounded-lg p-6"
         h3 class="text-lg font-semibold text-gray-900 mb-4" = t("auctions.show.place_bid")
         p class="text-sm text-gray-500 mb-4"
+          - financial_account = current_user.financial_account
           = "#{t('auctions.show.your_balance')}: "
-          = number_to_currency(current_user.balance, unit: "₽", format: "%n %u")
+          = format_money(financial_account&.available_amount || 0, currency: financial_account&.currency || FinancialAccount.new.currency)
         = form_with url: auction_bids_path(@auction), method: :post, class: "space-y-4" do |f|
           div
             = f.label "bid[amount]", t("auctions.show.bid_amount"), class: "block text-sm font-medium text-gray-700"

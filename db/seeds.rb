@@ -9,8 +9,8 @@ admin = User.find_or_create_by!(email: "admin@mediateca.dev") do |u|
   u.first_name = "Admin"
   u.last_name = "Mediateca"
   u.role = :admin
-  u.balance = 0
 end
+admin.financial_account || admin.create_financial_account!(currency: "RUB", available_amount_cents: 0)
 puts "  Admin created: #{admin.email}"
 
 # Sample users
@@ -21,9 +21,12 @@ users = 3.times.map do |i|
     u.first_name = %w[Иван Мария Дмитрий][i]
     u.last_name = %w[Петров Сидорова Козлов][i]
     u.role = :user
-    u.balance = [ 5000, 10000, 3000 ][i]
     u.company_name = [ "ООО Реклама Плюс", "ИП Сидорова", nil ][i]
   end
+end
+users.each_with_index do |user, i|
+  account = user.financial_account || user.create_financial_account!(currency: "RUB")
+  account.update!(available_amount_cents: [ 500_000, 1_000_000, 300_000 ][i]) if account.available_amount_cents.zero?
 end
 puts "  #{users.size} users created"
 

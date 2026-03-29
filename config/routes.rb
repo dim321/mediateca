@@ -19,8 +19,16 @@ Rails.application.routes.draw do
 
   resources :broadcasts, only: [ :index, :create ]
 
-  resource :balance, only: [ :show ] do
-    post :deposit
+  resource :balance, only: [ :show ]
+  resources :top_ups, only: [ :create ] do
+    collection do
+      get :success
+      get :cancel
+    end
+  end
+  namespace :webhooks do
+    post :stripe, to: "stripe#create"
+    post :yookassa, to: "yookassa#create"
   end
 
   # === Admin namespace ===

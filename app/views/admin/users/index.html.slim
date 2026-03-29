@@ -23,7 +23,8 @@ div class="bg-white shadow overflow-hidden rounded-lg"
             span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium #{user.admin? ? 'bg-indigo-100 text-indigo-800' : 'bg-gray-100 text-gray-700'}"
               = t("admin.users.index.#{user.role}_role")
           td class="px-6 py-4 text-sm text-gray-500"
-            = number_to_currency(user.balance, unit: "₽", separator: ",", delimiter: " ", format: "%n %u")
+            - financial_account = user.financial_account
+            = format_money(financial_account&.available_amount || 0, currency: financial_account&.currency || FinancialAccount.new.currency)
           td class="px-6 py-4 text-sm text-gray-500" = user.created_at.strftime("%d.%m.%Y")
           td class="px-6 py-4 text-right"
             - if user != current_user

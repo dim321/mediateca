@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_12_141141) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_29_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -102,6 +102,43 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_141141) do
     t.index ["name"], name: "index_device_groups_on_name", unique: true
   end
 
+  create_table "financial_accounts", force: :cascade do |t|
+    t.bigint "available_amount_cents", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.string "currency", default: "RUB", null: false
+    t.bigint "held_amount_cents", default: 0, null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_financial_accounts_on_user_id", unique: true
+    t.check_constraint "available_amount_cents >= 0", name: "financial_accounts_available_amount_cents_non_negative"
+    t.check_constraint "held_amount_cents >= 0", name: "financial_accounts_held_amount_cents_non_negative"
+  end
+
+  create_table "ledger_entries", force: :cascade do |t|
+    t.bigint "amount_cents", null: false
+    t.bigint "balance_after_cents", null: false
+    t.datetime "created_at", null: false
+    t.string "currency", null: false
+    t.string "description", null: false
+    t.integer "entry_type", null: false
+    t.bigint "financial_account_id", null: false
+    t.bigint "held_after_cents", null: false
+    t.string "idempotency_key"
+    t.jsonb "metadata", default: {}, null: false
+    t.bigint "payment_id"
+    t.bigint "reference_id"
+    t.string "reference_type"
+    t.datetime "updated_at", null: false
+    t.index ["financial_account_id", "created_at"], name: "index_ledger_entries_on_financial_account_id_and_created_at"
+    t.index ["idempotency_key"], name: "index_ledger_entries_on_idempotency_key"
+    t.index ["payment_id"], name: "index_ledger_entries_on_payment_id"
+    t.index ["reference_type", "reference_id"], name: "index_ledger_entries_on_reference_type_and_reference_id"
+    t.check_constraint "amount_cents <> 0", name: "ledger_entries_amount_cents_non_zero"
+    t.check_constraint "balance_after_cents >= 0", name: "ledger_entries_balance_after_cents_non_negative"
+    t.check_constraint "held_after_cents >= 0", name: "ledger_entries_held_after_cents_non_negative"
+  end
+
   create_table "media_files", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "duration"
@@ -115,6 +152,47 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_141141) do
     t.index ["user_id", "created_at"], name: "index_media_files_on_user_id_and_created_at"
     t.index ["user_id", "media_type"], name: "index_media_files_on_user_id_and_media_type"
     t.index ["user_id"], name: "index_media_files_on_user_id"
+  end
+
+  create_table "payment_webhook_events", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "event_id", null: false
+    t.string "event_type", null: false
+    t.jsonb "payload", default: {}, null: false
+    t.datetime "processed_at"
+    t.integer "provider", null: false
+    t.datetime "updated_at", null: false
+    t.index ["processed_at"], name: "index_payment_webhook_events_unprocessed", where: "(processed_at IS NULL)"
+    t.index ["provider", "event_id"], name: "index_payment_webhook_events_on_provider_and_event_id", unique: true
+  end
+
+  create_table "payments", force: :cascade do |t|
+    t.bigint "amount_cents", null: false
+    t.text "confirmation_url"
+    t.datetime "created_at", null: false
+    t.string "currency", null: false
+    t.datetime "failed_at"
+    t.string "failure_reason"
+    t.bigint "financial_account_id", null: false
+    t.string "idempotency_key", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.integer "operation_type", null: false
+    t.datetime "paid_at"
+    t.integer "provider", null: false
+    t.string "provider_checkout_session_id"
+    t.string "provider_customer_id"
+    t.string "provider_payment_id"
+    t.jsonb "raw_response", default: {}, null: false
+    t.text "return_url"
+    t.integer "status", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["financial_account_id"], name: "index_payments_on_financial_account_id"
+    t.index ["idempotency_key"], name: "index_payments_on_idempotency_key", unique: true
+    t.index ["provider", "provider_payment_id"], name: "index_payments_on_provider_and_provider_payment_id", unique: true, where: "(provider_payment_id IS NOT NULL)"
+    t.index ["status"], name: "index_payments_on_status"
+    t.index ["user_id"], name: "index_payments_on_user_id"
+    t.check_constraint "amount_cents > 0", name: "payments_amount_cents_positive"
   end
 
   create_table "playlist_items", force: :cascade do |t|
@@ -174,21 +252,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_141141) do
     t.index ["start_time"], name: "index_time_slots_on_start_time"
   end
 
-  create_table "transactions", force: :cascade do |t|
-    t.decimal "amount", precision: 12, scale: 2, null: false
-    t.datetime "created_at", null: false
-    t.string "description", null: false
-    t.bigint "reference_id"
-    t.string "reference_type"
-    t.integer "transaction_type", null: false
-    t.bigint "user_id", null: false
-    t.index ["reference_type", "reference_id"], name: "index_transactions_on_reference_type_and_reference_id"
-    t.index ["user_id", "created_at"], name: "index_transactions_on_user_id_and_created_at"
-    t.index ["user_id"], name: "index_transactions_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
-    t.decimal "balance", precision: 12, scale: 2, default: "0.0", null: false
     t.string "company_name"
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
@@ -202,7 +266,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_141141) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.check_constraint "balance >= 0::numeric", name: "positive_balance"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
@@ -213,7 +276,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_141141) do
   add_foreign_key "bids", "users"
   add_foreign_key "device_group_memberships", "broadcast_devices"
   add_foreign_key "device_group_memberships", "device_groups"
+  add_foreign_key "financial_accounts", "users"
+  add_foreign_key "ledger_entries", "financial_accounts"
+  add_foreign_key "ledger_entries", "payments"
   add_foreign_key "media_files", "users"
+  add_foreign_key "payments", "financial_accounts"
+  add_foreign_key "payments", "users"
   add_foreign_key "playlist_items", "media_files"
   add_foreign_key "playlist_items", "playlists"
   add_foreign_key "playlists", "users"
@@ -221,5 +289,4 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_12_141141) do
   add_foreign_key "scheduled_broadcasts", "time_slots"
   add_foreign_key "scheduled_broadcasts", "users"
   add_foreign_key "time_slots", "broadcast_devices"
-  add_foreign_key "transactions", "users"
 end

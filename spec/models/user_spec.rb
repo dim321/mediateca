@@ -8,7 +8,6 @@ RSpec.describe User, type: :model do
     it { is_expected.to validate_presence_of(:last_name) }
     it { is_expected.to validate_presence_of(:email) }
     it { is_expected.to validate_uniqueness_of(:email).case_insensitive }
-    it { is_expected.to validate_numericality_of(:balance).is_greater_than_or_equal_to(0) }
   end
 
   describe "enums" do
@@ -17,15 +16,19 @@ RSpec.describe User, type: :model do
 
   describe "associations" do
     # Associations are tested once their target models exist (US1-US6)
-    it { is_expected.to have_many(:media_files).dependent(:destroy) } if defined?(MediaFile)
-    it { is_expected.to have_many(:playlists).dependent(:destroy) } if defined?(Playlist)
-    it { is_expected.to have_many(:bids).dependent(:restrict_with_error) } if defined?(Bid)
-    it { is_expected.to have_many(:transactions).dependent(:restrict_with_error) } if defined?(Transaction)
-    it { is_expected.to have_many(:scheduled_broadcasts).dependent(:restrict_with_error) } if defined?(ScheduledBroadcast)
+    it { is_expected.to have_one(:financial_account).dependent(:restrict_with_error) }
+    it { is_expected.to have_many(:media_files).dependent(:destroy) }
+    it { is_expected.to have_many(:playlists).dependent(:destroy) }
+    it { is_expected.to have_many(:bids).dependent(:restrict_with_error) }
+    it { is_expected.to have_many(:payments).dependent(:restrict_with_error) }
+    it { is_expected.to have_many(:scheduled_broadcasts).dependent(:restrict_with_error) }
 
     it "declares associations for future models" do
-      associations = User.reflect_on_all_associations(:has_many).map(&:name)
-      expect(associations).to include(:media_files, :playlists, :bids, :transactions, :scheduled_broadcasts)
+      has_many_associations = User.reflect_on_all_associations(:has_many).map(&:name)
+      has_one_associations = User.reflect_on_all_associations(:has_one).map(&:name)
+
+      expect(has_one_associations).to include(:financial_account)
+      expect(has_many_associations).to include(:media_files, :playlists, :bids, :payments, :scheduled_broadcasts)
     end
   end
 
@@ -64,26 +67,6 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "balance" do
-    it "defaults to 0" do
-      new_user = User.new
-      expect(new_user.balance).to eq(0)
-    end
-
-    it "does not allow negative balance" do
-      user.balance = -1
-      expect(user).not_to be_valid
-      expect(user.errors[:balance]).to be_present
-    end
-
-    it "has a DB-level CHECK constraint for positive balance" do
-      persisted_user = create(:user)
-      expect {
-        persisted_user.update_column(:balance, -1)
-      }.to raise_error(ActiveRecord::StatementInvalid)
-    end
-  end
-
   describe "#full_name" do
     it "returns first and last name" do
       user = build(:user, first_name: "Ivan", last_name: "Petrov")
@@ -91,15 +74,30 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "#sufficient_balance?" do
-    it "returns true when balance covers amount" do
-      user = build(:user, :with_balance)
-      expect(user.sufficient_balance?(5_000)).to be true
+  describe "#financial_account!" do
+    it "creates a financial account when missing" do
+      user = create(:user)
+
+      expect {
+        user.financial_account!
+      }.to change(FinancialAccount, :count).by(1)
     end
 
-    it "returns false when balance is insufficient" do
-      user = build(:user, balance: 100)
-      expect(user.sufficient_balance?(500)).to be false
+    it "returns the existing financial account" do
+      user = create(:user)
+      existing_account = create(:financial_account, user: user)
+
+      expect(user.financial_account!).to eq(existing_account)
+    end
+
+    it "returns the existing account when a creation race raises RecordNotUnique" do
+      user = create(:user)
+      existing_account = create(:financial_account, user: user)
+
+      allow(user).to receive(:financial_account).and_return(nil, existing_account)
+      allow(user).to receive(:create_financial_account!).with(currency: "RUB").and_raise(ActiveRecord::RecordNotUnique)
+
+      expect(user.financial_account!).to eq(existing_account)
     end
   end
 end
