@@ -13,9 +13,9 @@
 | 9 | [ ] | Implement YooKassa webhook ingestion | YooKassa webhook controller, job, processor | YooKassa webhook is accepted, raw event is stored exactly once, duplicate event does not create duplicate side effects | 7 |
 | 10 | [ ] | Finalize top-up on confirmed webhook | `Payments::FinalizeTopUp`, `Payments::FailPayment` | `Payment` transitions to `succeeded` or `failed`, account is credited exactly once, repeated processing is idempotent | 8, 9 |
 | 11 | [ ] | Add reconciliation for stuck payments | reconciliation job and scheduling | Old `pending` and `processing` payments are rechecked against PSP state, mismatches are logged or marked for review | 10 |
-| 12 | [ ] | Refactor bids to use available funds | `Auctions::BidService`, bids specs | Bid validation uses `financial_account.available_amount_cents`, insufficient funds are enforced on the new model | 4, 10 |
-| 13 | [ ] | Add hold placement for leading bids | `Auctions::BidService` and helper services | New highest bid creates a hold, one user cannot overspend across multiple auctions | 12 |
-| 14 | [ ] | Add hold release on outbid | auction helpers and specs | When a bidder is outbid, their hold is released correctly and only once | 13 |
+| 12 | [x] | Refactor bids to use available funds | `Auctions::BidService`, bids specs | Bid validation uses `financial_account.available_amount_cents`, insufficient funds are enforced on the new model | 4, 10 |
+| 13 | [x] | Add hold placement for leading bids | `Auctions::BidService` and helper services | New highest bid creates a hold, one user cannot overspend across multiple auctions | 12 |
+| 14 | [x] | Add hold release on outbid | auction helpers and specs | When a bidder is outbid, their hold is released correctly and only once | 13 |
 | 15 | [ ] | Refactor auction close to capture held funds | `Auctions::CloseAuctionService` | Closing an auction captures held funds instead of direct deduction, no capture means no broadcast and no sold slot | 14 |
 | 16 | [ ] | Remove legacy deposit and deduction services | old billing services | Old `DepositService`, `DeductionService`, and old balance checks are removed or reduced to safe wrappers over the new layer | 15 |
 | 17 | [ ] | Replace legacy `Transaction` usage | model, factories, specs, balance history | App code no longer depends on legacy `Transaction`, history reads only from `LedgerEntry` | 16 |
