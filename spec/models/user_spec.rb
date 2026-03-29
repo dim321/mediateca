@@ -8,7 +8,6 @@ RSpec.describe User, type: :model do
     it { is_expected.to validate_presence_of(:last_name) }
     it { is_expected.to validate_presence_of(:email) }
     it { is_expected.to validate_uniqueness_of(:email).case_insensitive }
-    it { is_expected.to validate_numericality_of(:balance).is_greater_than_or_equal_to(0) }
   end
 
   describe "enums" do
@@ -69,26 +68,6 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe "balance" do
-    it "defaults to 0" do
-      new_user = User.new
-      expect(new_user.balance).to eq(0)
-    end
-
-    it "does not allow negative balance" do
-      user.balance = -1
-      expect(user).not_to be_valid
-      expect(user.errors[:balance]).to be_present
-    end
-
-    it "has a DB-level CHECK constraint for positive balance" do
-      persisted_user = create(:user)
-      expect {
-        persisted_user.update_column(:balance, -1)
-      }.to raise_error(ActiveRecord::StatementInvalid)
-    end
-  end
-
   describe "#full_name" do
     it "returns first and last name" do
       user = build(:user, first_name: "Ivan", last_name: "Petrov")
@@ -120,18 +99,6 @@ RSpec.describe User, type: :model do
       allow(user).to receive(:create_financial_account!).with(currency: "RUB").and_raise(ActiveRecord::RecordNotUnique)
 
       expect(user.financial_account!).to eq(existing_account)
-    end
-  end
-
-  describe "#sufficient_balance?" do
-    it "returns true when balance covers amount" do
-      user = build(:user, :with_balance)
-      expect(user.sufficient_balance?(5_000)).to be true
-    end
-
-    it "returns false when balance is insufficient" do
-      user = build(:user, balance: 100)
-      expect(user.sufficient_balance?(500)).to be false
     end
   end
 end

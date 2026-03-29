@@ -20,7 +20,8 @@ FactoryBot.define do
 
     trait :with_bids do
       after(:create) do |auction|
-        user = create(:user, balance: 10_000)
+        user = create(:user)
+        create(:financial_account, user: user, available_amount_cents: 1_000_000, held_amount_cents: 0)
         create(:bid, auction: auction, user: user, amount: auction.starting_price + 100)
       end
     end

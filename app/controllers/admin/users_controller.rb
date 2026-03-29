@@ -3,7 +3,7 @@ module Admin
     before_action :set_user, only: :update
 
     def index
-      @users = User.order(created_at: :desc)
+      @users = User.includes(:financial_account).order(created_at: :desc)
     end
 
     def update

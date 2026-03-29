@@ -135,83 +135,14 @@ RSpec.describe "Financial schema" do
     end.to raise_error(ActiveRecord::RecordNotUnique)
   end
 
-  it "backfills financial accounts from legacy user balances" do
-    user = create(:user, balance: 123.45)
-    migration_path = Dir[Rails.root.join("db/migrate/*_backfill_financial_accounts_from_users_balance.rb")].first
-    load migration_path
-    begin
-      expect do
-        ActiveRecord::Migration.suppress_messages do
-          BackfillFinancialAccountsFromUsersBalance.new.migrate(:up)
-        end
-      end.to change { financial_account_class.where(user_id: user.id).count }.by(1)
-
-      account = financial_account_class.find_by!(user_id: user.id)
-      expect(account.available_amount_cents).to eq(12_345)
-      expect(account.held_amount_cents).to eq(0)
-      expect(account.currency).to eq("RUB")
-    ensure
-      financial_account_class.where(user_id: user.id).delete_all
-    end
+  it "removes the legacy users.balance column" do
+    expect(User.columns_hash).not_to have_key("balance")
   end
 
-  it "backfills integer major-unit balances into cents" do
-    user = create(:user, balance: 123)
-    migration_path = Dir[Rails.root.join("db/migrate/*_backfill_financial_accounts_from_users_balance.rb")].first
-    load migration_path
+  it "removes the legacy positive_balance check constraint from users" do
+    constraint_names = connection.check_constraints("users").map(&:name)
 
-    begin
-      ActiveRecord::Migration.suppress_messages do
-        BackfillFinancialAccountsFromUsersBalance.new.migrate(:up)
-      end
-
-      account = financial_account_class.find_by!(user_id: user.id)
-      expect(account.available_amount_cents).to eq(12_300)
-    ensure
-      financial_account_class.where(user_id: user.id).delete_all
-    end
-  end
-
-  it "backfills zero balances as zero cents" do
-    user = create(:user, balance: 0)
-    migration_path = Dir[Rails.root.join("db/migrate/*_backfill_financial_accounts_from_users_balance.rb")].first
-    load migration_path
-
-    begin
-      ActiveRecord::Migration.suppress_messages do
-        BackfillFinancialAccountsFromUsersBalance.new.migrate(:up)
-      end
-
-      account = financial_account_class.find_by!(user_id: user.id)
-      expect(account.available_amount_cents).to eq(0)
-    ensure
-      financial_account_class.where(user_id: user.id).delete_all
-    end
-  end
-
-  it "documents that legacy users.balance is stored in decimal major units, not cents" do
-    balance_column = User.columns_hash.fetch("balance")
-
-    expect(balance_column.type).to eq(:decimal)
-    expect(balance_column.precision).to eq(12)
-    expect(balance_column.scale).to eq(2)
-    expect(balance_column.null).to be(false)
-  end
-
-  it "rejects negative legacy balances before backfill via positive_balance" do
-    user = create(:user)
-
-    expect do
-      user.update_column(:balance, -1)
-    end.to raise_error(ActiveRecord::StatementInvalid)
-  end
-
-  it "rejects null legacy balances before backfill" do
-    user = create(:user)
-
-    expect do
-      user.update_column(:balance, nil)
-    end.to raise_error(ActiveRecord::StatementInvalid)
+    expect(constraint_names).not_to include("positive_balance")
   end
 
   it "adds an index for unprocessed webhook events" do

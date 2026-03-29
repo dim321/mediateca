@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Auctions::BidService do
-  let(:user) { create(:user, balance: 10_000) }
+  let(:user) { create(:user) }
   let!(:financial_account) { create(:financial_account, user: user, currency: "USD", available_amount_cents: 1_000_000, held_amount_cents: 0) }
   let(:auction) { create(:auction, starting_price: 100, current_highest_bid: nil) }
 
@@ -58,7 +58,7 @@ RSpec.describe Auctions::BidService do
     end
 
     context "when insufficient balance" do
-      let(:poor_user) { create(:user, balance: 50) }
+      let(:poor_user) { create(:user) }
       let!(:poor_account) { create(:financial_account, user: poor_user, currency: "USD", available_amount_cents: 5_000, held_amount_cents: 0) }
 
       it "returns failure" do
@@ -90,7 +90,7 @@ RSpec.describe Auctions::BidService do
     end
 
     context "when a bidder is outbid" do
-      let(:previous_bidder) { create(:user, balance: 10_000) }
+      let(:previous_bidder) { create(:user) }
       let!(:previous_account) { create(:financial_account, user: previous_bidder, currency: "USD", available_amount_cents: 985_000, held_amount_cents: 15_000) }
 
       before do

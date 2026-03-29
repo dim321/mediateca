@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Auctions::CloseAuctionService do
-  let(:winner) { create(:user, balance: 10_000) }
+  let(:winner) { create(:user) }
   let!(:winner_account) { create(:financial_account, user: winner, currency: "USD", available_amount_cents: 950_000, held_amount_cents: 50_000) }
   let(:device) { create(:broadcast_device) }
   let(:time_slot) { create(:time_slot, :available, broadcast_device: device) }

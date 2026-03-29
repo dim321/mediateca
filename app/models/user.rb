@@ -18,7 +18,6 @@ class User < ApplicationRecord
   # === Validations ===
   validates :first_name, presence: true
   validates :last_name, presence: true
-  validates :balance, numericality: { greater_than_or_equal_to: 0 }
 
   # === Instance methods ===
   def full_name
@@ -29,9 +28,5 @@ class User < ApplicationRecord
     financial_account || create_financial_account!(currency: "RUB")
   rescue ActiveRecord::RecordNotUnique
     reload.financial_account || FinancialAccount.find_by!(user_id: id)
-  end
-
-  def sufficient_balance?(amount)
-    balance >= amount
   end
 end

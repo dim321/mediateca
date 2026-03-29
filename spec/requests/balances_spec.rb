@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Balances", type: :request do
   let(:html_headers) { { "Accept" => "text/html" } }
-  let(:user) { create(:user, balance: 5000) }
+  let(:user) { create(:user) }
   let!(:financial_account) { create(:financial_account, user: user, currency: "USD", available_amount_cents: 500_000, held_amount_cents: 15_000) }
 
   before { sign_in user }
