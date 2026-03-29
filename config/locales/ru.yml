@@ -217,18 +217,21 @@ ru:
     show:
       title: "Мой баланс"
       current: "Текущий баланс"
-      deposit: "Пополнить баланс"
-      amount_label: "Сумма (руб.)"
-      amount_placeholder: "1000"
-      deposit_btn: "Пополнить"
+      held: "Средства в холде"
+      top_up_pending: "Онлайн-пополнение будет доступно на следующем этапе интеграции платежей."
       history: "История транзакций"
       date: "Дата"
       description: "Описание"
       type: "Тип"
       amount: "Сумма"
-      deposit_type: "Пополнение"
-      withdrawal_type: "Списание"
       empty: "Нет транзакций."
+      entry_types:
+        deposit_settled: "Пополнение подтверждено"
+        hold: "Холд"
+        release: "Освобождение холда"
+        capture: "Списание из холда"
+        refund: "Возврат"
+        adjustment: "Корректировка"
     flash:
       deposited: "Баланс пополнен на %{amount}."
 

@@ -217,18 +217,21 @@ en:
     show:
       title: "My balance"
       current: "Current balance"
-      deposit: "Deposit"
-      amount_label: "Amount (RUB)"
-      amount_placeholder: "1000"
-      deposit_btn: "Deposit"
+      held: "Held balance"
+      top_up_pending: "Online top-ups will be enabled in the next payment integration step."
       history: "Transaction history"
       date: "Date"
       description: "Description"
       type: "Type"
       amount: "Amount"
-      deposit_type: "Deposit"
-      withdrawal_type: "Withdrawal"
       empty: "No transactions."
+      entry_types:
+        deposit_settled: "Deposit settled"
+        hold: "Hold"
+        release: "Release"
+        capture: "Capture"
+        refund: "Refund"
+        adjustment: "Adjustment"
     flash:
       deposited: "Balance topped up by %{amount}."
 

@@ -19,9 +19,7 @@ Rails.application.routes.draw do
 
   resources :broadcasts, only: [ :index, :create ]
 
-  resource :balance, only: [ :show ] do
-    post :deposit
-  end
+  resource :balance, only: [ :show ]
 
   # === Admin namespace ===
   namespace :admin do
