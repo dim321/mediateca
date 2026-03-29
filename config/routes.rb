@@ -26,6 +26,9 @@ Rails.application.routes.draw do
       get :cancel
     end
   end
+  namespace :webhooks do
+    post :stripe, to: "stripe#create"
+  end
 
   # === Admin namespace ===
   namespace :admin do

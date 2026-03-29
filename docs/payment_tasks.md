@@ -9,7 +9,7 @@
 | 5 | [x] | Move balance page to new wallet | `BalancesController`, balance views, layout | Balance screen reads from `financial_account`, history uses `ledger_entries`, old instant deposit action is not exposed in UI | 4 |
 | 6 | [x] | Add provider strategy layer | `app/services/payments/gateway/*`, resolver | Strategy contract exists, provider selection resolves correctly, external request payloads include metadata and idempotency keys | 5 |
 | 7 | [x] | Implement top-up creation flow | `TopUpsController`, routes, `Payments::CreateTopUp` | User can choose Stripe or YooKassa, local `Payment` is created in `pending`, redirect URL is returned and persisted | 6 |
-| 8 | [ ] | Implement Stripe webhook ingestion | Stripe webhook controller, job, processor | Valid Stripe webhook is accepted, invalid signature returns `400`, raw event is stored exactly once | 7 |
+| 8 | [x] | Implement Stripe webhook ingestion | Stripe webhook controller, job, processor | Valid Stripe webhook is accepted, invalid signature returns `400`, raw event is stored exactly once | 7 |
 | 9 | [ ] | Implement YooKassa webhook ingestion | YooKassa webhook controller, job, processor | YooKassa webhook is accepted, raw event is stored exactly once, duplicate event does not create duplicate side effects | 7 |
 | 10 | [ ] | Finalize top-up on confirmed webhook | `Payments::FinalizeTopUp`, `Payments::FailPayment` | `Payment` transitions to `succeeded` or `failed`, account is credited exactly once, repeated processing is idempotent | 8, 9 |
 | 11 | [ ] | Add reconciliation for stuck payments | reconciliation job and scheduling | Old `pending` and `processing` payments are rechecked against PSP state, mismatches are logged or marked for review | 10 |
