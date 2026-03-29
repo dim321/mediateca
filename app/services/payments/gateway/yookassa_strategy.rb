@@ -5,7 +5,7 @@ module Payments
         @connection = connection
       end
 
-      def create_top_up(payment:, return_url:)
+      def create_top_up(payment:, return_url:, **)
         response = connection.post("payments") do |request|
           request.headers["Content-Type"] = "application/json"
           request.headers["Idempotence-Key"] = payment.idempotency_key

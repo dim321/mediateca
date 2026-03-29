@@ -218,13 +218,20 @@ en:
       title: "My balance"
       current: "Current balance"
       held: "Held balance"
-      top_up_pending: "Online top-ups will be enabled in the next payment integration step."
+      top_up_title: "Top up balance"
+      top_up_hint: "Choose a payment provider and top-up amount in %{currency}."
+      provider_label: "Payment provider"
+      amount_label: "Amount (%{currency})"
+      top_up_submit: "Proceed to payment"
       history: "Transaction history"
       date: "Date"
       description: "Description"
       type: "Type"
       amount: "Amount"
       empty: "No transactions."
+      providers:
+        stripe: "Stripe"
+        yookassa: "YooKassa"
       entry_types:
         deposit_settled: "Deposit settled"
         hold: "Hold"
@@ -232,8 +239,10 @@ en:
         capture: "Capture"
         refund: "Refund"
         adjustment: "Adjustment"
+  top_ups:
     flash:
-      deposited: "Balance topped up by %{amount}."
+      awaiting_confirmation: "Payment was created. The balance will be credited after provider confirmation."
+      canceled: "Payment was canceled."
 
   admin:
     nav:

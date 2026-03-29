@@ -1,7 +1,7 @@
 module Payments
   module Gateway
     class StripeStrategy < Base
-      def create_top_up(payment:, success_url:, cancel_url:)
+      def create_top_up(payment:, success_url:, cancel_url:, **)
         session = Stripe::Checkout::Session.create(
           build_payload(payment: payment, success_url: success_url, cancel_url: cancel_url),
           { idempotency_key: payment.idempotency_key }

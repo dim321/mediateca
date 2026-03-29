@@ -218,13 +218,20 @@ ru:
       title: "Мой баланс"
       current: "Текущий баланс"
       held: "Средства в холде"
-      top_up_pending: "Онлайн-пополнение будет доступно на следующем этапе интеграции платежей."
+      top_up_title: "Пополнить баланс"
+      top_up_hint: "Выберите платежную систему и сумму пополнения в валюте %{currency}."
+      provider_label: "Платежная система"
+      amount_label: "Сумма (%{currency})"
+      top_up_submit: "Перейти к оплате"
       history: "История транзакций"
       date: "Дата"
       description: "Описание"
       type: "Тип"
       amount: "Сумма"
       empty: "Нет транзакций."
+      providers:
+        stripe: "Stripe"
+        yookassa: "YooKassa"
       entry_types:
         deposit_settled: "Пополнение подтверждено"
         hold: "Холд"
@@ -232,8 +239,10 @@ ru:
         capture: "Списание из холда"
         refund: "Возврат"
         adjustment: "Корректировка"
+  top_ups:
     flash:
-      deposited: "Баланс пополнен на %{amount}."
+      awaiting_confirmation: "Платеж создан. Баланс будет пополнен после подтверждения платежной системой."
+      canceled: "Оплата отменена."
 
   admin:
     nav:
