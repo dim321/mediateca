@@ -40,7 +40,8 @@ html lang=I18n.locale class="h-full bg-gray-50"
               = link_to "EN", url_for(locale: :en), class: (I18n.locale == :en ? "font-semibold text-indigo-600" : "hover:text-indigo-600")
             - if user_signed_in?
               = link_to balance_path, class: "inline-flex items-center px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium hover:bg-green-100" do
-                = number_to_currency(current_user.balance, unit: "₽", format: "%n %u")
+                - financial_account = current_user.financial_account
+                = format_money(financial_account&.available_amount || 0, currency: financial_account&.currency || FinancialAccount.new.currency)
               span class="text-sm text-gray-500" = current_user.full_name
               = button_to t("nav.sign_out"), destroy_user_session_path, method: :delete, class: "text-sm text-gray-500 hover:text-gray-700"
             - else
