@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   end
   namespace :webhooks do
     post :stripe, to: "stripe#create"
+    post :yookassa, to: "yookassa#create"
   end
 
   # === Admin namespace ===
