@@ -12,7 +12,6 @@ class User < ApplicationRecord
   has_many :playlists, dependent: :destroy
   has_many :bids, dependent: :restrict_with_error
   has_many :payments, dependent: :restrict_with_error
-  has_many :transactions, dependent: :restrict_with_error
   has_many :scheduled_broadcasts, dependent: :restrict_with_error
 
   # === Validations ===

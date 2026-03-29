@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_28_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_29_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -252,19 +252,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_110000) do
     t.index ["start_time"], name: "index_time_slots_on_start_time"
   end
 
-  create_table "transactions", force: :cascade do |t|
-    t.decimal "amount", precision: 12, scale: 2, null: false
-    t.datetime "created_at", null: false
-    t.string "description", null: false
-    t.bigint "reference_id"
-    t.string "reference_type"
-    t.integer "transaction_type", null: false
-    t.bigint "user_id", null: false
-    t.index ["reference_type", "reference_id"], name: "index_transactions_on_reference_type_and_reference_id"
-    t.index ["user_id", "created_at"], name: "index_transactions_on_user_id_and_created_at"
-    t.index ["user_id"], name: "index_transactions_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "company_name"
     t.datetime "created_at", null: false
@@ -302,5 +289,4 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_28_110000) do
   add_foreign_key "scheduled_broadcasts", "time_slots"
   add_foreign_key "scheduled_broadcasts", "users"
   add_foreign_key "time_slots", "broadcast_devices"
-  add_foreign_key "transactions", "users"
 end

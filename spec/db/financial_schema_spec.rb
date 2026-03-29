@@ -139,6 +139,10 @@ RSpec.describe "Financial schema" do
     expect(User.columns_hash).not_to have_key("balance")
   end
 
+  it "drops the legacy transactions table" do
+    expect(connection.data_source_exists?("transactions")).to be(false)
+  end
+
   it "removes the legacy positive_balance check constraint from users" do
     constraint_names = connection.check_constraints("users").map(&:name)
 

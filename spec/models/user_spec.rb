@@ -21,7 +21,6 @@ RSpec.describe User, type: :model do
     it { is_expected.to have_many(:playlists).dependent(:destroy) }
     it { is_expected.to have_many(:bids).dependent(:restrict_with_error) }
     it { is_expected.to have_many(:payments).dependent(:restrict_with_error) }
-    it { is_expected.to have_many(:transactions).dependent(:restrict_with_error) }
     it { is_expected.to have_many(:scheduled_broadcasts).dependent(:restrict_with_error) }
 
     it "declares associations for future models" do
@@ -29,7 +28,7 @@ RSpec.describe User, type: :model do
       has_one_associations = User.reflect_on_all_associations(:has_one).map(&:name)
 
       expect(has_one_associations).to include(:financial_account)
-      expect(has_many_associations).to include(:media_files, :playlists, :bids, :payments, :transactions, :scheduled_broadcasts)
+      expect(has_many_associations).to include(:media_files, :playlists, :bids, :payments, :scheduled_broadcasts)
     end
   end
 
