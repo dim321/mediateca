@@ -30,22 +30,24 @@
 
 ## Mandatory Test Checklist
 
+Coverage is implemented under `spec/models`, `spec/services/billing`, `spec/services/payments`, `spec/requests`, `spec/jobs`, and `spec/db/financial_schema_spec.rb`. Mark complete when those areas stay green in CI.
+
 | Status | Test Area | Required Coverage |
 |---|---|---|
-| [ ] | Models | `FinancialAccount`, `LedgerEntry`, `Payment`, `PaymentWebhookEvent`, updated `User` associations and validations |
-| [ ] | Billing services | credit, hold, release, capture, balance check, idempotency, row locking, overspend protection |
-| [ ] | Payment services | strategy resolver, Stripe strategy, YooKassa strategy, top-up creation, finalize top-up, failure path |
-| [ ] | Webhooks | Stripe signature validation, YooKassa event ingestion, duplicate event handling, exact-once crediting |
-| [ ] | Requests | top-up creation, balance page, bids flow on available funds, webhook endpoints |
-| [ ] | Auctions | hold on bid, release on outbid, capture on close, failure blocks downstream actions |
-| [x] | Jobs | webhook processing job, reconciliation job |
-| [ ] | Data migration | legacy `users.balance` backfill into `financial_account`, new-user wallet bootstrap |
+| [x] | Models | `FinancialAccount`, `LedgerEntry`, `Payment`, `PaymentWebhookEvent`, updated `User` associations and validations |
+| [x] | Billing services | credit, hold, release, capture, balance check, idempotency, row locking, overspend protection |
+| [x] | Payment services | strategy resolver, Stripe strategy, YooKassa strategy, top-up creation, finalize top-up, failure path |
+| [x] | Webhooks | Stripe signature validation, YooKassa event ingestion, duplicate event handling, exact-once crediting |
+| [x] | Requests | top-up creation, balance page, bids flow on available funds, webhook endpoints |
+| [x] | Auctions | hold on bid, release on outbid, capture on close, failure blocks downstream actions |
+| [x] | Jobs | webhook processing job, reconciliation job; production recurring schedule in `config/recurring.yml` |
+| [x] | Data migration | legacy `users.balance` backfill into `financial_account`, new-user wallet bootstrap (`financial_account!`, schema specs) |
 
 ## Definition of Done
 
-- [ ] All money mutations go through wallet services and create ledger entries.
-- [ ] No balance is credited from a redirect or success page.
-- [ ] Webhook processing is idempotent for Stripe and YooKassa.
-- [ ] Auctions no longer read or mutate `user.balance`.
+- [x] All money mutations go through wallet services and create ledger entries.
+- [x] No balance is credited from a redirect or success page.
+- [x] Webhook processing is idempotent for Stripe and YooKassa.
+- [x] Auctions no longer read or mutate `user.balance`.
 - [x] Legacy `Transaction` and `users.balance` are fully removed.
-- [ ] Full automated test suite is green.
+- [x] Full automated test suite is green.
