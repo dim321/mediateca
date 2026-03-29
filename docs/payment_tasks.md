@@ -17,7 +17,7 @@
 | 13 | [x] | Add hold placement for leading bids | `Auctions::BidService` and helper services | New highest bid creates a hold, one user cannot overspend across multiple auctions | 12 |
 | 14 | [x] | Add hold release on outbid | auction helpers and specs | When a bidder is outbid, their hold is released correctly and only once | 13 |
 | 15 | [ ] | Refactor auction close to capture held funds | `Auctions::CloseAuctionService` | Closing an auction captures held funds instead of direct deduction, no capture means no broadcast and no sold slot | 14 |
-| 16 | [ ] | Remove legacy deposit and deduction services | old billing services | Old `DepositService`, `DeductionService`, and old balance checks are removed or reduced to safe wrappers over the new layer | 15 |
+| 16 | [x] | Remove legacy deposit and deduction services | old billing services | Old `DepositService`, `DeductionService`, and old balance checks are removed or reduced to safe wrappers over the new layer | 15 |
 | 17 | [ ] | Replace legacy `Transaction` usage | model, factories, specs, balance history | App code no longer depends on legacy `Transaction`, history reads only from `LedgerEntry` | 16 |
 | 18 | [ ] | Remove `users.balance` | migration, `User`, seeds, factories | `users.balance` column and constraint are removed, new users still get a working wallet, test suite remains green | 17 |
 
