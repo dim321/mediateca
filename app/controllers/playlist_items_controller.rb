@@ -50,6 +50,6 @@ class PlaylistItemsController < ApplicationController
   end
 
   def playlist_item_params
-    params.require(:playlist_item).permit(:media_file_id, :position)
+    params.require(:playlist_item).permit(:position)
   end
 end

@@ -32,6 +32,18 @@ RSpec.describe "PlaylistItems", type: :request do
            headers: html_headers
       expect(playlist.reload.total_duration).to eq(120)
     end
+
+    it "does not add another user's media file to the playlist" do
+      other_media_file = create(:media_file, :ready, user: create(:user), duration: 90)
+
+      expect {
+        post playlist_items_path(playlist),
+             params: { playlist_item: { media_file_id: other_media_file.id } },
+             headers: html_headers
+      }.not_to change(PlaylistItem, :count)
+
+      expect(playlist.reload.media_files).not_to include(other_media_file)
+    end
   end
 
   describe "PATCH /playlists/:playlist_id/items/:id" do
@@ -45,6 +57,17 @@ RSpec.describe "PlaylistItems", type: :request do
             params: { playlist_item: { position: 3 } },
             headers: html_headers
       expect(item1.reload.position).to eq(3)
+    end
+
+    it "ignores attempts to swap the item to another user's media file" do
+      other_media_file = create(:media_file, :ready, user: create(:user), duration: 90)
+
+      patch playlist_item_path(playlist, item1),
+            params: { playlist_item: { media_file_id: other_media_file.id, position: 3 } },
+            headers: html_headers
+
+      expect(item1.reload.media_file).to eq(media_file)
+      expect(item1.position).to eq(3)
     end
   end
 
