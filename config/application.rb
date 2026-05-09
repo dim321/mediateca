@@ -24,6 +24,10 @@ module Mediateca
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
+    # Uploads are validated and attached through Media::UploadService.
+    # Do not expose Active Storage's unauthenticated direct-upload endpoint.
+    config.active_storage.draw_routes = false
+
     # I18n
     config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{yml,yaml}")]
     config.i18n.default_locale = :ru
