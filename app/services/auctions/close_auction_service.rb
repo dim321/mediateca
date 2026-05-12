@@ -16,8 +16,11 @@ module Auctions
         if auction.highest_bidder_id.present?
           winner = User.find(auction.highest_bidder_id)
           deduct_winner_balance(winner)
-          create_scheduled_broadcast(winner) if playlist
-          update_time_slot_status
+          if playlist
+            create_scheduled_broadcast(winner)
+          else
+            update_time_slot_status
+          end
         end
       end
 
@@ -31,25 +34,31 @@ module Auctions
     attr_reader :auction, :playlist
 
     def deduct_winner_balance(winner)
-      Billing::DeductionService.new(
+      result = Billing::DeductionService.new(
         user: winner,
         amount: auction.current_highest_bid,
         description: "Выигрыш аукциона ##{auction.id}",
         reference: auction
       ).call
+
+      raise ServiceError, result.error unless result.success?
     end
 
     def create_scheduled_broadcast(winner)
-      Broadcasts::ScheduleService.new(
+      result = Broadcasts::ScheduleService.new(
         user: winner,
         playlist: playlist,
         time_slot: auction.time_slot,
         auction: auction
       ).call
+
+      raise ServiceError, result.error unless result.success?
     end
 
     def update_time_slot_status
       auction.time_slot.update!(slot_status: :sold)
     end
+
+    class ServiceError < StandardError; end
   end
 end

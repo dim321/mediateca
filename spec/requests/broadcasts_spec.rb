@@ -26,6 +26,8 @@ RSpec.describe "Broadcasts", type: :request do
     let(:time_slot) { create(:time_slot, :available, broadcast_device: device) }
     let(:playlist) { create(:playlist, user: user, total_duration: 1500) }
 
+    before { user.update!(balance: 1_000) }
+
     it "creates a broadcast for available slot" do
       expect {
         post broadcasts_path, params: { broadcast: { playlist_id: playlist.id, time_slot_id: time_slot.id } }, headers: html_headers
@@ -53,6 +55,16 @@ RSpec.describe "Broadcasts", type: :request do
       it "does not create a broadcast" do
         expect {
           post broadcasts_path, params: { broadcast: { playlist_id: playlist.id, time_slot_id: sold_slot.id } }, headers: html_headers
+        }.not_to change(ScheduledBroadcast, :count)
+      end
+    end
+
+    context "when user balance is insufficient" do
+      before { user.update!(balance: time_slot.starting_price - 1) }
+
+      it "does not create a broadcast" do
+        expect {
+          post broadcasts_path, params: { broadcast: { playlist_id: playlist.id, time_slot_id: time_slot.id } }, headers: html_headers
         }.not_to change(ScheduledBroadcast, :count)
       end
     end

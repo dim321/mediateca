@@ -10,11 +10,17 @@ module Broadcasts
     end
 
     def call
-      validate_slot_available!
-      validate_playlist_duration!
+      broadcast = nil
 
-      broadcast = create_broadcast
-      update_time_slot_status
+      ActiveRecord::Base.transaction do
+        time_slot.lock!
+        validate_slot_available!
+        validate_playlist_duration!
+
+        broadcast = create_broadcast
+        deduct_balance!(broadcast)
+        update_time_slot_status
+      end
 
       Result.new(success?: true, broadcast: broadcast, error: nil)
     rescue ServiceError => e
@@ -52,6 +58,19 @@ module Broadcasts
 
     def update_time_slot_status
       time_slot.update!(slot_status: :sold)
+    end
+
+    def deduct_balance!(broadcast)
+      return if auction || time_slot.starting_price.zero?
+
+      result = Billing::DeductionService.new(
+        user: user,
+        amount: time_slot.starting_price,
+        description: "Бронирование слота ##{time_slot.id}",
+        reference: broadcast
+      ).call
+
+      raise ServiceError, result.error unless result.success?
     end
 
     class ServiceError < StandardError; end
