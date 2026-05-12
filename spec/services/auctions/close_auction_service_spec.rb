@@ -35,6 +35,25 @@ RSpec.describe Auctions::CloseAuctionService do
       end
     end
 
+    context "when the winner can no longer pay the winning bid" do
+      let(:winner) { create(:user, balance: 100) }
+
+      it "returns failure" do
+        result = described_class.new(auction: auction, playlist: playlist).call
+        expect(result).not_to be_success
+        expect(result.error).to include("Недостаточно средств")
+      end
+
+      it "does not close the auction, create a broadcast, or sell the slot" do
+        expect {
+          described_class.new(auction: auction, playlist: playlist).call
+        }.not_to change(ScheduledBroadcast, :count)
+
+        expect(auction.reload).to be_open
+        expect(time_slot.reload).to be_available
+      end
+    end
+
     context "without bids" do
       let(:empty_auction) { create(:auction, :open, starting_price: 100, current_highest_bid: nil, highest_bidder_id: nil) }
 
