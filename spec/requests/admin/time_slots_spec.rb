@@ -8,11 +8,31 @@ RSpec.describe "Admin::TimeSlots", type: :request do
   before { sign_in admin }
 
   describe "GET /admin/devices/:device_id/time_slots" do
-    let!(:slot) { create(:time_slot, broadcast_device: device) }
-
     it "returns schedule for device" do
+      create(:time_slot, broadcast_device: device)
+
       get admin_device_time_slots_path(device), headers: html_headers
       expect(response).to have_http_status(:ok)
+    end
+
+    it "shows slots that belong to the selected date in the device time zone" do
+      create(
+        :time_slot,
+        broadcast_device: device,
+        start_time: Time.zone.parse("2026-05-09 21:00:00 UTC"),
+        end_time: Time.zone.parse("2026-05-09 21:30:00 UTC")
+      )
+      create(
+        :time_slot,
+        broadcast_device: device,
+        start_time: Time.zone.parse("2026-05-10 20:30:00 UTC"),
+        end_time: Time.zone.parse("2026-05-10 21:00:00 UTC")
+      )
+
+      get admin_device_time_slots_path(device, date: "2026-05-10"), headers: html_headers
+
+      expect(response.body).to include("00:00")
+      expect(response.body).to include("23:30")
     end
   end
 
