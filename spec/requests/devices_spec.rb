@@ -24,9 +24,10 @@ RSpec.describe "Devices", type: :request do
 
   describe "GET /devices/:id/schedule" do
     let(:device) { create(:broadcast_device, time_zone: "Moscow") }
-    let!(:slot) { create(:time_slot, broadcast_device: device) }
 
     it "returns schedule for the device" do
+      create(:time_slot, broadcast_device: device)
+
       get schedule_device_path(device), headers: html_headers
       expect(response).to have_http_status(:ok)
     end

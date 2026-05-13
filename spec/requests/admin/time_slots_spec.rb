@@ -8,9 +8,9 @@ RSpec.describe "Admin::TimeSlots", type: :request do
   before { sign_in admin }
 
   describe "GET /admin/devices/:device_id/time_slots" do
-    let!(:slot) { create(:time_slot, broadcast_device: device) }
-
     it "returns schedule for device" do
+      create(:time_slot, broadcast_device: device)
+
       get admin_device_time_slots_path(device), headers: html_headers
       expect(response).to have_http_status(:ok)
     end

@@ -5,9 +5,9 @@ RSpec.describe "Api::V1::Device", type: :request do
   let(:auth_headers) { { "Authorization" => "Bearer #{device.api_token}" } }
 
   describe "GET /api/v1/device/schedule" do
-    let!(:slot) { create(:time_slot, broadcast_device: device) }
-
     it "returns schedule with valid token" do
+      create(:time_slot, broadcast_device: device)
+
       get api_v1_device_schedule_path, headers: auth_headers
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)

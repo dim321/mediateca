@@ -43,4 +43,47 @@ RSpec.describe TimeSlot, type: :model do
       expect(described_class.available).not_to include(sold_slot)
     end
   end
+
+  describe ".for_date" do
+    let(:device) { create(:broadcast_device, time_zone: "Moscow") }
+    let!(:previous_day_slot) do
+      create(
+        :time_slot,
+        broadcast_device: device,
+        start_time: Time.zone.parse("2026-05-09 20:30:00 UTC"),
+        end_time: Time.zone.parse("2026-05-09 21:00:00 UTC")
+      )
+    end
+    let!(:first_slot) do
+      create(
+        :time_slot,
+        broadcast_device: device,
+        start_time: Time.zone.parse("2026-05-09 21:00:00 UTC"),
+        end_time: Time.zone.parse("2026-05-09 21:30:00 UTC")
+      )
+    end
+    let!(:last_slot) do
+      create(
+        :time_slot,
+        broadcast_device: device,
+        start_time: Time.zone.parse("2026-05-10 20:30:00 UTC"),
+        end_time: Time.zone.parse("2026-05-10 21:00:00 UTC")
+      )
+    end
+    let!(:next_day_slot) do
+      create(
+        :time_slot,
+        broadcast_device: device,
+        start_time: Time.zone.parse("2026-05-10 21:00:00 UTC"),
+        end_time: Time.zone.parse("2026-05-10 21:30:00 UTC")
+      )
+    end
+
+    it "filters by the provided time zone's local day" do
+      slots = device.time_slots.for_date("2026-05-10", "Moscow")
+
+      expect(slots).to contain_exactly(first_slot, last_slot)
+      expect(slots).not_to include(previous_day_slot, next_day_slot)
+    end
+  end
 end
