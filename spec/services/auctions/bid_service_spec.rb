@@ -46,6 +46,31 @@ RSpec.describe Auctions::BidService do
         expect(result).not_to be_success
         expect(result.error).to include("закрыт")
       end
+
+      it "rejects a bid when the auction was closed after the service received a stale instance" do
+        stale_auction = create(:auction, :open, starting_price: 100)
+        stale_auction.class.find(stale_auction.id).update!(auction_status: :closed)
+
+        expect {
+          result = described_class.new(user: user, auction: stale_auction, amount: 500).call
+
+          expect(result).not_to be_success
+          expect(result.error).to include("закрыт")
+        }.not_to change(Bid, :count)
+      end
+    end
+
+    context "when auction close time has passed but status is still open" do
+      let(:auction) { create(:auction, :open, closes_at: 1.minute.ago) }
+
+      it "returns failure" do
+        expect {
+          result = described_class.new(user: user, auction: auction, amount: 500).call
+
+          expect(result).not_to be_success
+          expect(result.error).to include("закрыт")
+        }.not_to change(Bid, :count)
+      end
     end
 
     context "when insufficient balance" do

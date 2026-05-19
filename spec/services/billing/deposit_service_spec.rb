@@ -16,6 +16,15 @@ RSpec.describe Billing::DepositService do
         expect(user.reload.balance.to_f).to eq(1500.0)
       end
 
+      it "adds to the persisted balance instead of a stale in-memory balance" do
+        stale_user = User.find(user.id)
+        user.update!(balance: 1250)
+
+        described_class.new(user: stale_user, amount: 500).call
+
+        expect(user.reload.balance.to_f).to eq(1750.0)
+      end
+
       it "returns successful result" do
         result = described_class.new(user: user, amount: 500).call
         expect(result).to be_success

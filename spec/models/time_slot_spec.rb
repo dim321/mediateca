@@ -42,5 +42,27 @@ RSpec.describe TimeSlot, type: :model do
       expect(described_class.available).to include(available_slot)
       expect(described_class.available).not_to include(sold_slot)
     end
+
+    it "filters by the device-local day when a time zone is provided" do
+      moscow = ActiveSupport::TimeZone["Moscow"]
+      local_date = Date.new(2026, 5, 20)
+      local_midnight_slot = create(
+        :time_slot,
+        broadcast_device: device,
+        start_time: moscow.local(2026, 5, 20, 0, 0).utc,
+        end_time: moscow.local(2026, 5, 20, 0, 30).utc
+      )
+      previous_local_day_slot = create(
+        :time_slot,
+        broadcast_device: device,
+        start_time: moscow.local(2026, 5, 19, 23, 30).utc,
+        end_time: moscow.local(2026, 5, 20, 0, 0).utc
+      )
+
+      slots = described_class.for_date(local_date, "Moscow")
+
+      expect(slots).to include(local_midnight_slot)
+      expect(slots).not_to include(previous_local_day_slot)
+    end
   end
 end

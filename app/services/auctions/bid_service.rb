@@ -11,28 +11,28 @@ module Auctions
     end
 
     def call
-      validate_auction_open!
-      validate_bid_amount!
       validate_user_balance!
 
       retries = 0
       begin
         ActiveRecord::Base.transaction do
-          auction.reload
-          validate_bid_amount! # Re-check after reload
+          auction.with_lock do
+            validate_auction_open!
+            validate_bid_amount!
 
-          bid = Bid.create!(
-            auction: auction,
-            user: user,
-            amount: amount
-          )
+            bid = Bid.create!(
+              auction: auction,
+              user: user,
+              amount: amount
+            )
 
-          auction.update!(
-            current_highest_bid: amount,
-            highest_bidder_id: user.id
-          )
+            auction.update!(
+              current_highest_bid: amount,
+              highest_bidder_id: user.id
+            )
 
-          Result.new(success?: true, bid: bid, error: nil)
+            Result.new(success?: true, bid: bid, error: nil)
+          end
         end
       rescue ActiveRecord::StaleObjectError
         retries += 1
@@ -48,7 +48,7 @@ module Auctions
     attr_reader :user, :auction, :amount
 
     def validate_auction_open!
-      raise ServiceError, "Аукцион закрыт" unless auction.open?
+      raise ServiceError, "Аукцион закрыт" unless auction.open? && auction.closes_at.future?
     end
 
     def validate_bid_amount!
