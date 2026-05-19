@@ -48,7 +48,7 @@ module Auctions
     attr_reader :user, :auction, :amount
 
     def validate_auction_open!
-      raise ServiceError, "Аукцион закрыт" unless auction.open?
+      raise ServiceError, "Аукцион закрыт" unless auction.open? && auction.closes_at.future?
     end
 
     def validate_bid_amount!

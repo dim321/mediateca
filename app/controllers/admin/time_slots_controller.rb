@@ -22,11 +22,13 @@ module Admin
         return
       end
 
-      # Generate 48 x 30-minute slots for the day (in device timezone, stored as UTC)
+      # Generate one 30-minute slot for each real interval in the device-local day.
       slots = []
       day_start = zone.local(date.year, date.month, date.day, 0, 0)
-      48.times do |i|
-        start_time = day_start + (i * 30).minutes
+      day_end = day_start.next_day
+      start_time = day_start
+
+      while start_time < day_end
         slots << {
           broadcast_device_id: @device.id,
           start_time: start_time.utc,
@@ -36,12 +38,14 @@ module Admin
           created_at: Time.current,
           updated_at: Time.current
         }
+
+        start_time += 30.minutes
       end
 
       TimeSlot.insert_all(slots)
 
       redirect_to admin_device_time_slots_path(@device, date: date),
-                  notice: t("admin.time_slots.flash.generated", date: I18n.l(date, format: :long))
+                  notice: t("admin.time_slots.flash.generated", count: slots.size, date: I18n.l(date, format: :long))
     end
 
     def update
