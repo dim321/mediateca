@@ -4,17 +4,18 @@ module Admin
     before_action :set_time_slot, only: [ :update ]
 
     def index
-      date = params[:date] || Date.current
-      @time_slots = @device.time_slots.for_date(date).order(start_time: :asc)
+      zone = device_time_zone
+      date = params[:date] || zone.now.to_date
+      @time_slots = @device.time_slots.for_date(date, zone).order(start_time: :asc)
       @date = Date.parse(date.to_s)
     end
 
     def generate
-      zone = ActiveSupport::TimeZone[@device.time_zone] || ActiveSupport::TimeZone["UTC"]
+      zone = device_time_zone
       date = params[:date].present? ? Date.parse(params[:date]) : zone.now.to_date
 
       # Check if slots already exist for this date
-      existing = @device.time_slots.for_date(date)
+      existing = @device.time_slots.for_date(date, zone)
       if existing.any?
         redirect_to admin_device_time_slots_path(@device, date: date),
                     alert: t("admin.time_slots.flash.slots_already_exist", date: I18n.l(date, format: :long))
@@ -61,6 +62,10 @@ module Admin
 
     def set_time_slot
       @time_slot = TimeSlot.find(params[:id])
+    end
+
+    def device_time_zone
+      ActiveSupport::TimeZone[@device.time_zone] || ActiveSupport::TimeZone["UTC"]
     end
 
     def time_slot_params

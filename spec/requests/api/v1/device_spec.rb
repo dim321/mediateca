@@ -68,5 +68,18 @@ RSpec.describe "Api::V1::Device", type: :request do
       expect(response).to have_http_status(:ok)
       expect(broadcast.reload).to be_failed
     end
+
+    it "does not update broadcasts assigned to another device" do
+      other_device = create(:broadcast_device, :online)
+      other_broadcast = create(:scheduled_broadcast, time_slot: create(:time_slot, broadcast_device: other_device))
+
+      post api_v1_device_broadcast_status_path,
+           params: { broadcast_id: other_broadcast.id, status: "failed" },
+           headers: auth_headers,
+           as: :json
+
+      expect(response).to have_http_status(:not_found)
+      expect(other_broadcast.reload).to be_scheduled
+    end
   end
 end
