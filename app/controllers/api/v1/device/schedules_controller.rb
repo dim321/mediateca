@@ -3,9 +3,10 @@ module Api
     module Device
       class SchedulesController < BaseController
         def show
-          date = params[:date].present? ? Date.parse(params[:date]) : Date.current
+          zone = device_time_zone
+          date = params[:date].present? ? Date.parse(params[:date]) : zone.now.to_date
           time_slots = current_device.time_slots
-            .for_date(date)
+            .for_date(date, zone)
             .includes(:scheduled_broadcast)
             .order(start_time: :asc)
 
@@ -16,6 +17,10 @@ module Api
         end
 
         private
+
+        def device_time_zone
+          ActiveSupport::TimeZone[current_device.time_zone] || ActiveSupport::TimeZone["UTC"]
+        end
 
         def serialize_slot(slot)
           data = {

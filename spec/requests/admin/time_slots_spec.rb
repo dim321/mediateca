@@ -46,12 +46,19 @@ RSpec.describe "Admin::TimeSlots", type: :request do
 
     it "generates the exact number of half-hour slots in a device local DST day" do
       device.update!(time_zone: "Eastern Time (US & Canada)")
+      date = Date.new(2026, 3, 8)
+      zone = ActiveSupport::TimeZone[device.time_zone]
 
       expect {
         post generate_admin_device_time_slots_path(device),
-             params: { date: "2026-03-08" },
+             params: { date: date.to_s },
              headers: html_headers
       }.to change(TimeSlot, :count).by(46)
+
+      generated_slots = device.time_slots.for_date(date, zone).order(start_time: :asc)
+      expect(generated_slots.size).to eq(46)
+      expect(generated_slots.first.display_time_in_zone).to eq("00:00 — 00:30")
+      expect(generated_slots.last.end_time).to eq(zone.local(2026, 3, 9).utc)
     end
 
     it "rejects duplicate date generation" do

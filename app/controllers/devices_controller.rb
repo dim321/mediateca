@@ -8,7 +8,14 @@ class DevicesController < ApplicationController
 
   def schedule
     @device = BroadcastDevice.find(params[:id])
-    @date = params[:date].present? ? Date.parse(params[:date]) : Date.current
-    @time_slots = @device.time_slots.for_date(@date).order(start_time: :asc)
+    zone = device_time_zone
+    @date = params[:date].present? ? Date.parse(params[:date]) : zone.now.to_date
+    @time_slots = @device.time_slots.for_date(@date, zone).order(start_time: :asc)
+  end
+
+  private
+
+  def device_time_zone
+    ActiveSupport::TimeZone[@device.time_zone] || ActiveSupport::TimeZone["UTC"]
   end
 end
