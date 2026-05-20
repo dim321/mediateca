@@ -31,7 +31,7 @@ RSpec.describe "Admin::TimeSlots", type: :request do
       get admin_device_time_slots_path(device, date: date.to_s), headers: html_headers
 
       expect(response.body).to include("00:00 — 00:30")
-      expect(response.body).to include("321.00 ₽")
+      expect(response.body).to include("321,00 ₽")
     end
   end
 
