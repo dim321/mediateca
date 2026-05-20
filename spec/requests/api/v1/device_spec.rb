@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Device", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   let(:device) { create(:broadcast_device, :online) }
   let(:auth_headers) { { "Authorization" => "Bearer #{device.api_token}" } }
 
@@ -12,6 +14,43 @@ RSpec.describe "Api::V1::Device", type: :request do
       expect(response).to have_http_status(:ok)
       json = JSON.parse(response.body)
       expect(json["time_slots"]).to be_an(Array)
+    end
+
+    it "returns slots from the device local day even when they fall on the previous UTC date" do
+      date = Date.new(2026, 3, 26)
+      zone = ActiveSupport::TimeZone[device.time_zone]
+      local_midnight = zone.local(date.year, date.month, date.day)
+      local_midnight_slot = create(
+        :time_slot,
+        broadcast_device: device,
+        start_time: local_midnight.utc,
+        end_time: (local_midnight + 30.minutes).utc
+      )
+
+      get api_v1_device_schedule_path(date: date.to_s), headers: auth_headers
+
+      json = JSON.parse(response.body)
+      expect(json["time_slots"].pluck("id")).to include(local_midnight_slot.id)
+    end
+
+    it "defaults to the device local date when date is omitted" do
+      device.update!(time_zone: "Pacific/Kiritimati")
+      travel_to Time.utc(2026, 3, 25, 11, 30) do
+        date = Date.new(2026, 3, 26)
+        zone = ActiveSupport::TimeZone[device.time_zone]
+        local_midnight = zone.local(date.year, date.month, date.day)
+        local_midnight_slot = create(
+          :time_slot,
+          broadcast_device: device,
+          start_time: local_midnight.utc,
+          end_time: (local_midnight + 30.minutes).utc
+        )
+
+        get api_v1_device_schedule_path, headers: auth_headers
+
+        json = JSON.parse(response.body)
+        expect(json["time_slots"].pluck("id")).to include(local_midnight_slot.id)
+      end
     end
 
     it "rejects invalid token" do
