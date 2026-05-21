@@ -326,7 +326,7 @@ ru:
         empty_hint: "Нажмите «Генерировать слоты» для создания расписания."
       flash:
         slots_already_exist: "Слоты на %{date} уже созданы."
-        generated: "Создано 48 слотов на %{date}."
+        generated: "Создано %{count} слотов на %{date}."
         price_updated: "Цена обновлена."
     users:
       index:

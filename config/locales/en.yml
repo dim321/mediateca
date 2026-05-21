@@ -326,7 +326,7 @@ en:
         empty_hint: "Click «Generate slots» to create schedule."
       flash:
         slots_already_exist: "Slots for %{date} already exist."
-        generated: "Created 48 slots for %{date}."
+        generated: "Created %{count} slots for %{date}."
         price_updated: "Price updated."
     users:
       index:

@@ -56,7 +56,7 @@ tomorrow = Date.tomorrow
 devices.each do |device|
   zone = ActiveSupport::TimeZone[device.time_zone] || ActiveSupport::TimeZone["UTC"]
   day_start = zone.local(tomorrow.year, tomorrow.month, tomorrow.day, 8, 0) # 8 AM local
-  next if device.time_slots.for_date(tomorrow).any?
+  next if device.time_slots.for_date(tomorrow, zone).any?
 
   16.times do |i| # 8 hours of slots (8 AM - 4 PM)
     start_time = day_start + (i * 30).minutes
