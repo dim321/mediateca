@@ -32,6 +32,16 @@ RSpec.describe "Admin::TimeSlots", type: :request do
         post generate_admin_device_time_slots_path(device), params: { date: target_date }, headers: html_headers
       }.not_to change(TimeSlot, :count)
     end
+
+    it "generates slots until the next local midnight on DST transition days" do
+      dst_device = create(:broadcast_device, time_zone: "Eastern Time (US & Canada)")
+
+      expect {
+        post generate_admin_device_time_slots_path(dst_device),
+             params: { date: "2026-03-08" },
+             headers: html_headers
+      }.to change(TimeSlot, :count).by(46)
+    end
   end
 
   describe "PATCH /admin/time_slots/:id" do
