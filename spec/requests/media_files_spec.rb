@@ -30,6 +30,33 @@ RSpec.describe "MediaFiles", type: :request do
       get media_files_path, headers: html_headers
       expect(response).to have_http_status(:ok)
     end
+
+    it "uploads through the authenticated media_files endpoint" do
+      get media_files_path, headers: html_headers
+
+      expect(response.body).not_to include("data-direct-upload-url")
+    end
+  end
+
+  describe "POST /rails/active_storage/direct_uploads" do
+    before { sign_out user }
+
+    it "does not expose the default unauthenticated direct upload endpoint" do
+      expect {
+        post "/rails/active_storage/direct_uploads",
+          params: {
+            blob: {
+              filename: "sample.mp3",
+              byte_size: 1.megabyte,
+              checksum: Base64.strict_encode64(Digest::MD5.digest("sample")),
+              content_type: "audio/mpeg"
+            }
+          },
+          as: :json
+      }.not_to change(ActiveStorage::Blob, :count)
+
+      expect(response).to have_http_status(:not_found)
+    end
   end
 
   describe "GET /media_files/:id" do
