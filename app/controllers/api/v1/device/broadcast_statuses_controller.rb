@@ -3,7 +3,7 @@ module Api
     module Device
       class BroadcastStatusesController < BaseController
         def create
-          broadcast = ScheduledBroadcast.find(params[:broadcast_id])
+          broadcast = current_device.scheduled_broadcasts.find(params[:broadcast_id])
 
           result = Broadcasts::PlaybackService.new(
             broadcast: broadcast,

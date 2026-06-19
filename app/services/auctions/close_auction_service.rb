@@ -31,12 +31,14 @@ module Auctions
     attr_reader :auction, :playlist
 
     def deduct_winner_balance(winner)
-      Billing::DeductionService.new(
+      result = Billing::DeductionService.new(
         user: winner,
         amount: auction.current_highest_bid,
         description: "Выигрыш аукциона ##{auction.id}",
         reference: auction
       ).call
+
+      raise ServiceError, result.error unless result.success?
     end
 
     def create_scheduled_broadcast(winner)
@@ -51,5 +53,7 @@ module Auctions
     def update_time_slot_status
       auction.time_slot.update!(slot_status: :sold)
     end
+
+    class ServiceError < StandardError; end
   end
 end
