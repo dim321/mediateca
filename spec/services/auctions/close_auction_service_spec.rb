@@ -33,6 +33,19 @@ RSpec.describe Auctions::CloseAuctionService do
         described_class.new(auction: auction, playlist: playlist).call
         expect(time_slot.reload).to be_sold
       end
+
+      context "when the winner cannot pay at close time" do
+        let(:winner) { create(:user, balance: 100) }
+
+        it "rolls back auction close and keeps the slot available" do
+          result = described_class.new(auction: auction, playlist: playlist).call
+
+          expect(result).not_to be_success
+          expect(auction.reload).to be_open
+          expect(time_slot.reload).to be_available
+          expect(ScheduledBroadcast.count).to eq(0)
+        end
+      end
     end
 
     context "without bids" do
