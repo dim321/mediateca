@@ -30,6 +30,11 @@ RSpec.describe "MediaFiles", type: :request do
       get media_files_path, headers: html_headers
       expect(response).to have_http_status(:ok)
     end
+
+    it "renders a multipart upload field instead of an Active Storage direct upload field" do
+      get media_files_path, headers: html_headers
+      expect(response.body).not_to include("data-direct-upload-url")
+    end
   end
 
   describe "GET /media_files/:id" do

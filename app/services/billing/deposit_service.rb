@@ -11,14 +11,16 @@ module Billing
       validate_amount!
 
       ActiveRecord::Base.transaction do
+        locked_user = User.lock("FOR UPDATE").find(user.id)
+
         txn = Transaction.create!(
-          user: user,
+          user: locked_user,
           amount: amount,
           transaction_type: :deposit,
           description: "Пополнение баланса"
         )
 
-        user.update!(balance: user.balance + amount)
+        locked_user.update!(balance: locked_user.balance + amount)
 
         Result.new(success?: true, transaction: txn, error: nil)
       end

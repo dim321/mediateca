@@ -1,6 +1,7 @@
 class BroadcastDevice < ApplicationRecord
   # === Associations ===
   has_many :time_slots, dependent: :destroy
+  has_many :scheduled_broadcasts, through: :time_slots
   has_many :device_group_memberships, dependent: :destroy
   has_many :device_groups, through: :device_group_memberships
 
