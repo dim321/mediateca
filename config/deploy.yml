@@ -30,12 +30,13 @@ registry:
     - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets via Dotenv — not shell).
-# Required before `kamal deploy`: YC_ACCESS_KEY_ID and YC_SECRET_ACCESS_KEY must be set in the environment so .kamal/secrets can substitute them; `.kamal/hooks/pre-deploy` fails if they are empty (--skip-hooks disables this).
+# Required before `kamal deploy`: YC_BUCKET, YC_ACCESS_KEY_ID, and YC_SECRET_ACCESS_KEY must be set in the environment so .kamal/secrets can substitute them; `.kamal/hooks/pre-deploy` fails if they are empty (--skip-hooks disables this).
 # See .env.deploy.example.
 env:
   secret:
     - RAILS_MASTER_KEY
     - MEDIATECA_DATABASE_PASSWORD
+    - YC_BUCKET
     - YC_ACCESS_KEY_ID
     - YC_SECRET_ACCESS_KEY
   clear:

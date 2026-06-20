@@ -30,6 +30,13 @@ RSpec.describe "MediaFiles", type: :request do
       get media_files_path, headers: html_headers
       expect(response).to have_http_status(:ok)
     end
+
+    it "renders uploads as authenticated multipart form posts" do
+      get media_files_path, headers: html_headers
+
+      expect(response.body).to include('name="media_file[file]"')
+      expect(response.body).not_to include("data-direct-upload-url")
+    end
   end
 
   describe "GET /media_files/:id" do
@@ -60,6 +67,23 @@ RSpec.describe "MediaFiles", type: :request do
       expect {
         post media_files_path, params: { media_file: { title: "", file: valid_file } }, headers: html_headers
       }.not_to change(MediaFile, :count)
+    end
+  end
+
+  describe "POST /rails/active_storage/direct_uploads" do
+    it "does not expose the default unauthenticated direct upload endpoint" do
+      post "/rails/active_storage/direct_uploads",
+           params: {
+             blob: {
+               filename: "payload.mp3",
+               content_type: "audio/mpeg",
+               byte_size: 1,
+               checksum: "abc"
+             }
+           },
+           as: :json
+
+      expect(response).to have_http_status(:not_found)
     end
   end
 
