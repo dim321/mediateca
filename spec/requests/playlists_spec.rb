@@ -7,8 +7,8 @@ RSpec.describe "Playlists", type: :request do
   before { sign_in user }
 
   describe "GET /playlists" do
-    let!(:my_playlist) { create(:playlist, user: user) }
-    let!(:other_playlist) { create(:playlist, user: create(:user)) }
+    let!(:my_playlist) { create(:playlist, user: user, name: "Visible Playlist") }
+    let!(:other_playlist) { create(:playlist, user: create(:user), name: "Other User Playlist") }
 
     it "returns user's playlists" do
       get playlists_path, headers: html_headers
