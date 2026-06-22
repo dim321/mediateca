@@ -30,6 +30,13 @@ RSpec.describe "MediaFiles", type: :request do
       get media_files_path, headers: html_headers
       expect(response).to have_http_status(:ok)
     end
+
+    it "does not expose Active Storage direct uploads from the form" do
+      get media_files_path, headers: html_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include("data-direct-upload-url")
+    end
   end
 
   describe "GET /media_files/:id" do
