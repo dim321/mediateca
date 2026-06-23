@@ -18,9 +18,12 @@ class TimeSlot < ApplicationRecord
   validate :thirty_minute_duration
 
   # === Scopes ===
-  scope :for_date, ->(date) {
+  scope :for_date, ->(date, time_zone = Time.zone) {
+    zone = ActiveSupport::TimeZone[time_zone] || Time.zone
     date = Date.parse(date.to_s)
-    where(start_time: date.beginning_of_day..date.end_of_day)
+    day_start = zone.local(date.year, date.month, date.day)
+
+    where(start_time: day_start...day_start.advance(days: 1))
   }
 
   def display_time_in_zone
