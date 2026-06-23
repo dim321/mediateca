@@ -14,6 +14,23 @@ RSpec.describe "Api::V1::Device", type: :request do
       expect(json["time_slots"]).to be_an(Array)
     end
 
+    it "returns slots for the requested date in the device time zone" do
+      date = Date.new(2026, 6, 23)
+      zone = ActiveSupport::TimeZone[device.time_zone]
+      local_midnight = zone.local(date.year, date.month, date.day)
+      local_midnight_slot = create(
+        :time_slot,
+        broadcast_device: device,
+        start_time: local_midnight,
+        end_time: local_midnight + 30.minutes
+      )
+
+      get api_v1_device_schedule_path(date: date), headers: auth_headers
+
+      json = JSON.parse(response.body)
+      expect(json["time_slots"].map { |slot| slot["id"] }).to include(local_midnight_slot.id)
+    end
+
     it "rejects invalid token" do
       get api_v1_device_schedule_path, headers: { "Authorization" => "Bearer invalid" }
       expect(response).to have_http_status(:unauthorized)

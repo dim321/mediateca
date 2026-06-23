@@ -14,6 +14,17 @@ RSpec.describe "Admin::TimeSlots", type: :request do
       get admin_device_time_slots_path(device), headers: html_headers
       expect(response).to have_http_status(:ok)
     end
+
+    it "returns slots for the requested date in the device time zone" do
+      date = Date.new(2026, 6, 23)
+      zone = ActiveSupport::TimeZone[device.time_zone]
+      local_midnight = zone.local(date.year, date.month, date.day)
+      create(:time_slot, broadcast_device: device, start_time: local_midnight, end_time: local_midnight + 30.minutes)
+
+      get admin_device_time_slots_path(device, date: date), headers: html_headers
+
+      expect(response.body).to include("00:00 — 00:30")
+    end
   end
 
   describe "POST /admin/devices/:device_id/time_slots/generate" do
@@ -23,6 +34,26 @@ RSpec.describe "Admin::TimeSlots", type: :request do
              params: { date: 1.week.from_now.to_date.to_s },
              headers: html_headers
       }.to change(TimeSlot, :count).by(48)
+    end
+
+    it "generates 46 slots for a spring DST date" do
+      device.update!(time_zone: "Eastern Time (US & Canada)")
+
+      expect {
+        post generate_admin_device_time_slots_path(device),
+             params: { date: "2026-03-08" },
+             headers: html_headers
+      }.to change(TimeSlot, :count).by(46)
+    end
+
+    it "generates 50 slots for a fall DST date" do
+      device.update!(time_zone: "Eastern Time (US & Canada)")
+
+      expect {
+        post generate_admin_device_time_slots_path(device),
+             params: { date: "2026-11-01" },
+             headers: html_headers
+      }.to change(TimeSlot, :count).by(50)
     end
 
     it "rejects duplicate date generation" do
