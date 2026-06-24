@@ -6,6 +6,17 @@ RSpec.describe "MediaFiles", type: :request do
 
   before { sign_in user }
 
+  describe "Active Storage direct upload routes" do
+    it "does not expose the default direct upload endpoint" do
+      expect {
+        Rails.application.routes.recognize_path(
+          "/rails/active_storage/direct_uploads",
+          method: :post
+        )
+      }.to raise_error(ActionController::RoutingError)
+    end
+  end
+
   describe "GET /media_files" do
     let!(:audio_file) { create(:media_file, :audio, user: user) }
     let!(:video_file) { create(:media_file, :video, user: user) }
@@ -29,6 +40,13 @@ RSpec.describe "MediaFiles", type: :request do
       create_list(:media_file, 25, user: user)
       get media_files_path, headers: html_headers
       expect(response).to have_http_status(:ok)
+    end
+
+    it "renders the upload form without direct upload wiring" do
+      get media_files_path, headers: html_headers
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).not_to include("data-direct-upload-url")
     end
   end
 
