@@ -30,6 +30,15 @@ RSpec.describe "MediaFiles", type: :request do
       get media_files_path, headers: html_headers
       expect(response).to have_http_status(:ok)
     end
+
+    it "keeps uploads on the authenticated media_files endpoint" do
+      get media_files_path, headers: html_headers
+
+      expect(response.body).not_to include("data-direct-upload-url")
+      expect {
+        Rails.application.routes.recognize_path("/rails/active_storage/direct_uploads", method: :post)
+      }.to raise_error(ActionController::RoutingError)
+    end
   end
 
   describe "GET /media_files/:id" do
