@@ -14,6 +14,20 @@ RSpec.describe "Admin::TimeSlots", type: :request do
       get admin_device_time_slots_path(device), headers: html_headers
       expect(response).to have_http_status(:ok)
     end
+
+    it "submits the visible date field when generating slots" do
+      get admin_device_time_slots_path(device, date: Date.tomorrow), headers: html_headers
+
+      document = Nokogiri::HTML(response.body)
+      generate_button = document.at_css("[type='submit'][formaction='#{generate_admin_device_time_slots_path(device)}']")
+      form = generate_button.ancestors("form").first
+
+      expect(form.at_css("input[type='date'][name='date']")).to be_present
+      expect(generate_button["formaction"]).to eq(generate_admin_device_time_slots_path(device))
+      expect(generate_button["formmethod"]).to eq("post")
+      expect(generate_button["name"]).to eq("authenticity_token")
+      expect(generate_button["value"]).to be_present
+    end
   end
 
   describe "POST /admin/devices/:device_id/time_slots/generate" do
