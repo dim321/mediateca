@@ -29,5 +29,9 @@ module Mediateca
     config.i18n.default_locale = :ru
     config.i18n.available_locales = %i[ru en]
     config.i18n.fallbacks = true
+
+    # Media uploads must pass through MediaFilesController so authentication and
+    # media validation run before any object is persisted.
+    config.active_storage.draw_routes = false
   end
 end
