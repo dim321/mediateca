@@ -29,11 +29,7 @@ module Media
     attr_reader :file
 
     def file_metadata
-      @file_metadata ||= if file.is_a?(String)
-                           blob_metadata
-                         else
-                           uploaded_file_metadata
-                         end
+      @file_metadata ||= file.is_a?(String) ? blob_metadata : uploaded_file_metadata
     end
 
     def uploaded_file_metadata
