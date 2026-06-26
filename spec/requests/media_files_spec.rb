@@ -56,6 +56,22 @@ RSpec.describe "MediaFiles", type: :request do
       }.to change(MediaFile, :count).by(1)
     end
 
+    it "creates a media file from a direct-uploaded blob" do
+      blob = ActiveStorage::Blob.create_and_upload!(
+        io: File.open(Rails.root.join("spec/fixtures/files/sample.mp3")),
+        filename: "sample.mp3",
+        content_type: "audio/mpeg"
+      )
+
+      expect {
+        post media_files_path, params: { media_file: { title: "My Track", file: blob.signed_id } }, headers: html_headers
+      }.to change(MediaFile, :count).by(1)
+
+      media_file = MediaFile.last
+      expect(media_file.file).to be_attached
+      expect(media_file.file_size).to eq(blob.byte_size)
+    end
+
     it "rejects upload without title" do
       expect {
         post media_files_path, params: { media_file: { title: "", file: valid_file } }, headers: html_headers

@@ -32,7 +32,7 @@ module Media
         title: title,
         media_type: validation.media_type,
         format: validation.format,
-        file_size: file.size,
+        file_size: validation.file_size,
         processing_status: :pending
       )
     end
