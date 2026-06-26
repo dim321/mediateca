@@ -31,9 +31,15 @@ module Media
     def file_metadata
       @file_metadata ||= if file.is_a?(String)
                            blob_metadata
-                         elsif file.respond_to?(:original_filename) && file.respond_to?(:size)
-                           FileMetadata.new(filename: file.original_filename, size: file.size)
+                         else
+                           uploaded_file_metadata
                          end
+    end
+
+    def uploaded_file_metadata
+      return unless file.respond_to?(:original_filename) && file.respond_to?(:size)
+
+      FileMetadata.new(filename: file.original_filename, size: file.size)
     end
 
     def blob_metadata
