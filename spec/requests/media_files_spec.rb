@@ -67,7 +67,9 @@ RSpec.describe "MediaFiles", type: :request do
         post media_files_path, params: { media_file: { title: "My Track", file: blob.signed_id } }, headers: html_headers
       }.to change(MediaFile, :count).by(1)
 
-      expect(MediaFile.last.file).to be_attached
+      media_file = MediaFile.last
+      expect(media_file.file).to be_attached
+      expect(media_file.file_size).to eq(blob.byte_size)
     end
 
     it "rejects upload without title" do
