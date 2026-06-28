@@ -38,7 +38,7 @@ h2 class="text-lg font-semibold text-gray-900 mb-4" = t("balances.show.history")
               = txn.amount.positive? ? "+" : ""
               = number_to_currency(txn.amount, unit: "₽", format: "%n %u")
   div class="mt-4"
-    == pagy_nav(@pagy) if @pagy&.pages.to_i > 1
+    == @pagy.series_nav if @pagy&.pages.to_i > 1
 - else
   div class="bg-white shadow rounded-lg p-8 text-center"
     p class="text-gray-500" = t("balances.show.empty")

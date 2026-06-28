@@ -56,6 +56,37 @@ RSpec.describe "MediaFiles", type: :request do
       }.to change(MediaFile, :count).by(1)
     end
 
+    it "creates a media file from a direct-upload signed blob id" do
+      blob = ActiveStorage::Blob.create_and_upload!(
+        io: Rails.root.join("spec/fixtures/files/sample.mp3").open,
+        filename: "sample.mp3",
+        content_type: "audio/mpeg"
+      )
+
+      expect {
+        post media_files_path, params: { media_file: { title: "Direct Track", file: blob.signed_id } }, headers: html_headers
+      }.to change(MediaFile, :count).by(1)
+
+      media_file = MediaFile.last
+      expect(media_file.file.blob).to eq(blob)
+      expect(media_file.file_size).to eq(blob.byte_size)
+    end
+
+    it "rejects an oversized direct-upload signed blob id" do
+      blob = ActiveStorage::Blob.create_before_direct_upload!(
+        filename: "large.mp3",
+        byte_size: 101.megabytes,
+        checksum: Digest::MD5.base64digest("large"),
+        content_type: "audio/mpeg"
+      )
+
+      expect {
+        post media_files_path, params: { media_file: { title: "Large Track", file: blob.signed_id } }, headers: html_headers
+      }.not_to change(MediaFile, :count)
+
+      expect(response).to have_http_status(:unprocessable_content)
+    end
+
     it "rejects upload without title" do
       expect {
         post media_files_path, params: { media_file: { title: "", file: valid_file } }, headers: html_headers

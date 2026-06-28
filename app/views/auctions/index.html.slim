@@ -30,7 +30,7 @@ div class="flex space-x-2 mb-4"
         div class="mt-4"
           = link_to t("auctions.index.more"), auction_path(auction), class: "inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700 w-full justify-center"
   div class="mt-4"
-    == pagy_nav(@pagy) if @pagy&.pages.to_i > 1
+    == @pagy.series_nav if @pagy&.pages.to_i > 1
 - else
   div class="bg-white shadow rounded-lg p-8 text-center"
     p class="text-gray-500" = t("auctions.index.empty")

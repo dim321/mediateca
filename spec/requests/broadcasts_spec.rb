@@ -16,6 +16,14 @@ RSpec.describe "Broadcasts", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
+    it "renders pagination when broadcasts span multiple pages" do
+      playlist = create(:playlist, user: user)
+      create_list(:scheduled_broadcast, 21, user: user, playlist: playlist)
+
+      get broadcasts_path, headers: html_headers
+      expect(response).to have_http_status(:ok)
+    end
+
     it "filters by status" do
       get broadcasts_path(status: "scheduled"), headers: html_headers
       expect(response).to have_http_status(:ok)
