@@ -15,6 +15,13 @@ RSpec.describe "Auctions", type: :request do
       expect(response).to have_http_status(:ok)
     end
 
+    it "renders pagination when auctions span multiple pages" do
+      create_list(:auction, 21)
+
+      get auctions_path, headers: html_headers
+      expect(response).to have_http_status(:ok)
+    end
+
     it "filters by status" do
       get auctions_path(status: "open"), headers: html_headers
       expect(response).to have_http_status(:ok)

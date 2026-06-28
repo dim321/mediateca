@@ -5,19 +5,21 @@ module Media
     AUDIO_FORMATS = %w[mp3 aac wav].freeze
     VIDEO_FORMATS = %w[mp4 avi mov].freeze
 
-    Result = Struct.new(:success?, :error, :format, :media_type, keyword_init: true)
+    Result = Struct.new(:success?, :error, :format, :media_type, :file_size, keyword_init: true)
 
     def initialize(file:)
       @file = file
     end
 
     def call
+      return failure("Файл не выбран") unless file_metadata
+
       format = extract_format
       return failure("Неподдерживаемый формат файла. Допустимые: #{ALLOWED_FORMATS.join(', ')}") unless valid_format?(format)
       return failure("Максимальный размер файла — #{MAX_FILE_SIZE / 1.megabyte} МБ") unless valid_size?
 
       media_type = AUDIO_FORMATS.include?(format) ? :audio : :video
-      Result.new(success?: true, error: nil, format: format, media_type: media_type)
+      Result.new(success?: true, error: nil, format: format, media_type: media_type, file_size: file_metadata.size)
     end
 
     private
@@ -25,7 +27,7 @@ module Media
     attr_reader :file
 
     def extract_format
-      File.extname(file.original_filename).delete(".").downcase
+      File.extname(file_metadata.filename).delete(".").downcase
     end
 
     def valid_format?(format)
@@ -33,11 +35,34 @@ module Media
     end
 
     def valid_size?
-      file.size <= MAX_FILE_SIZE
+      file_metadata.size <= MAX_FILE_SIZE
+    end
+
+    def file_metadata
+      @file_metadata ||= metadata_from_blob || metadata_from_upload
+    end
+
+    def metadata_from_blob
+      return unless file.is_a?(String)
+
+      blob = ActiveStorage::Blob.find_signed(file)
+      return unless blob
+
+      Metadata.new(filename: blob.filename.to_s, size: blob.byte_size)
+    rescue ActiveSupport::MessageVerifier::InvalidSignature
+      nil
+    end
+
+    def metadata_from_upload
+      return unless file.respond_to?(:original_filename) && file.respond_to?(:size)
+
+      Metadata.new(filename: file.original_filename.to_s, size: file.size)
     end
 
     def failure(message)
-      Result.new(success?: false, error: message, format: nil, media_type: nil)
+      Result.new(success?: false, error: message, format: nil, media_type: nil, file_size: nil)
     end
+
+    Metadata = Data.define(:filename, :size)
   end
 end

@@ -14,6 +14,13 @@ RSpec.describe "Balances", type: :request do
       get balance_path, headers: html_headers
       expect(response).to have_http_status(:ok)
     end
+
+    it "renders pagination when transactions span multiple pages" do
+      create_list(:transaction, 21, user: user)
+
+      get balance_path, headers: html_headers
+      expect(response).to have_http_status(:ok)
+    end
   end
 
   describe "POST /balance/deposit" do
