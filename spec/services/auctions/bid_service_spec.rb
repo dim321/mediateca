@@ -38,6 +38,33 @@ RSpec.describe Auctions::BidService do
       end
     end
 
+    context "when amount has extra fractional precision" do
+      let!(:leading_bidder) { create(:user, balance: 10_000) }
+
+      before do
+        auction.update!(current_highest_bid: 100.00, highest_bidder_id: leading_bidder.id)
+        create(:bid, auction: auction, user: leading_bidder, amount: 100.00)
+      end
+
+      it "rejects amounts that round to the current highest bid" do
+        result = described_class.new(user: user, auction: auction, amount: "100.004").call
+
+        expect(result).not_to be_success
+        expect(result.error).to include("выше")
+        expect(auction.reload.highest_bidder_id).to eq(leading_bidder.id)
+        expect(auction.current_highest_bid).to eq(BigDecimal("100.00"))
+      end
+
+      it "accepts amounts that round up to a strictly higher bid" do
+        result = described_class.new(user: user, auction: auction, amount: "100.005").call
+
+        expect(result).to be_success
+        expect(result.bid.amount).to eq(BigDecimal("100.01"))
+        expect(auction.reload.highest_bidder_id).to eq(user.id)
+        expect(auction.current_highest_bid).to eq(BigDecimal("100.01"))
+      end
+    end
+
     context "when auction is closed" do
       let(:auction) { create(:auction, :closed) }
 
