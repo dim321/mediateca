@@ -7,7 +7,9 @@ module Auctions
     def initialize(user:, auction:, amount:)
       @user = user
       @auction = auction
-      @amount = amount.to_d
+      # Money columns are decimal(10,2); compare using the same scale so a
+      # crafted 100.004 cannot displace a standing 100.00 bid after persist.
+      @amount = amount.to_d.round(2, BigDecimal::ROUND_HALF_UP)
     end
 
     def call
