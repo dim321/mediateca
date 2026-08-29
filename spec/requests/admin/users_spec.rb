@@ -20,6 +20,11 @@ RSpec.describe "Admin::Users", type: :request do
       expect(response.body).to include(admin.email, other_user.email)
     end
 
+    it "nests the role select under user so the update action receives user[role]" do
+      get admin_users_path, headers: html_headers
+      expect(response.body).to include('name="user[role]"')
+    end
+
     it "denies access to non-admin users" do
       sign_in regular_user
       get admin_users_path, headers: html_headers
